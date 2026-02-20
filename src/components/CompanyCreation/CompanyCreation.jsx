@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import api from '../../api';
-import './CompanyCreation.css'; // optional, reuse global styles
 
 const CompanyCreation = () => {
   // State for locations
