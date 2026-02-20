@@ -34,7 +34,6 @@ const Users = () => {
     fetchUsers();
   }, []);
 
-  // Filter users by search term and status
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
       (user.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
@@ -95,7 +94,6 @@ const Users = () => {
     setIsDeleteModalOpen(false);
   };
 
-  // Helper to safely get field from user (flat or nested profile)
   const getUserField = (user, field) => {
     if (user[field] !== undefined && user[field] !== null && user[field] !== '') return user[field];
     if (user.profile && user.profile[field] !== undefined && user.profile[field] !== null && user.profile[field] !== '') return user.profile[field];
@@ -137,7 +135,7 @@ const Users = () => {
     <>
       <div className="fade-in">
         {/* Header */}
-        <div className="d-flex space-between align-center mb-4">
+        <div className="d-flex flex-wrap gap-3 align-center justify-content-between mb-4">
           <div>
             <h2 className="card-title" style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '4px' }}>
               User Management
@@ -163,9 +161,9 @@ const Users = () => {
 
         {/* Filters Card */}
         <div className="admin-card" style={{ padding: '20px 24px' }}>
-          <div className="d-flex space-between align-center flex-wrap gap-3">
-            <div className="d-flex align-center gap-3">
-              <div className="search-input-wrapper" style={{ width: '320px' }}>
+          <div className="d-flex flex-wrap gap-3 align-center justify-content-between">
+            <div className="d-flex flex-wrap gap-3 align-center">
+              <div className="search-input-wrapper" style={{ minWidth: '280px', flex: '1 1 auto' }}>
                 <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" className="search-icon" height="1em" width="1em">
                   <path d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z"></path>
                 </svg>
@@ -179,7 +177,7 @@ const Users = () => {
               </div>
               <select
                 className="form-control form-select-sm"
-                style={{ width: '160px', padding: '10px 12px', borderRadius: '10px', borderColor: '#eef0f5' }}
+                style={{ width: '160px', padding: '10px 12px', borderRadius: '30px', borderColor: '#e2e8f0' }}
                 value={statusFilter}
                 onChange={handleStatusFilterChange}
               >
@@ -189,45 +187,45 @@ const Users = () => {
                 <option value="Rejected">Rejected</option>
               </select>
             </div>
-            <div className="d-flex align-center gap-2">
-              <button className="btn btn-light btn-sm" style={{ padding: '8px 16px' }}>
+            <div className="d-flex gap-2">
+              <button className="btn btn-light btn-sm" style={{ padding: '8px 16px', borderRadius: '30px' }}>
                 <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" style={{ marginRight: '6px' }}>
                   <path d="M7 11h10v2H7zM4 7h16v2H4zm6 8h4v2h-4z"></path>
                 </svg>
                 Filter
               </button>
-              <button className="btn btn-light btn-sm" style={{ padding: '8px 16px' }}>Export</button>
+              <button className="btn btn-light btn-sm" style={{ padding: '8px 16px', borderRadius: '30px' }}>Export</button>
             </div>
           </div>
         </div>
 
         {/* Table Card */}
         <div className="admin-card" style={{ padding: 0, overflow: 'hidden', marginTop: '20px' }}>
-          <div className="table-responsive">
-            <table className="table" style={{ minWidth: '1200px', borderCollapse: 'separate', borderSpacing: '0 8px' }}>
+          <div className="table-responsive" style={{ overflowX: 'auto' }}>
+            <table className="table" style={{ minWidth: '1000px', width: '100%', borderCollapse: 'separate', borderSpacing: '0 8px' }}>
               <thead style={{ background: '#f9fafc' }}>
                 <tr>
-                  <th style={{ padding: '16px 20px', fontSize: '0.85rem', fontWeight: 600, color: '#7e8299', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Profile</th>
-                  <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#7e8299', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <th style={{ padding: '16px 20px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Profile</th>
+                  <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     Name <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" style={{ marginLeft: '4px', verticalAlign: 'middle' }} height="14" width="14"><path d="M7 20h2V8h3L8 4 4 8h3zm13-4h-3V4h-2v12h-3l4 4z"></path></svg>
                   </th>
-                  <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#7e8299', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Status</th>
-                  <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#7e8299', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Role</th>
-                  <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#7e8299', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Designation</th>
-                  <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#7e8299', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Company</th>
-                  <th style={{ padding: '16px 20px', fontSize: '0.85rem', fontWeight: 600, color: '#7e8299', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center' }}>Actions</th>
+                  <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Status</th>
+                  <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Role</th>
+                  <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Designation</th>
+                  <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Company</th>
+                  <th style={{ padding: '16px 20px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {paginatedUsers.length > 0 ? (
                   paginatedUsers.map((user) => (
-                    <tr key={user.id} style={{ background: '#fff', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', borderRadius: '12px', transition: 'all 0.2s', cursor: 'pointer' }} onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.04)'} onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 2px 6px rgba(0,0,0,0.02)'}>
+                    <tr key={user.id} className="table-row-hover" style={{ background: '#fff', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', borderRadius: '16px', transition: 'all 0.2s', cursor: 'pointer' }}>
                       <td style={{ padding: '16px 20px' }}>
                         <div
                           style={{
                             width: '48px',
                             height: '48px',
-                            borderRadius: '12px',
+                            borderRadius: '16px',
                             background: getInitialsBg(user.name || user.username),
                             display: 'flex',
                             alignItems: 'center',
@@ -242,7 +240,7 @@ const Users = () => {
                       </td>
                       <td style={{ padding: '16px 12px' }}>
                         <div className="d-flex" style={{ flexDirection: 'column' }}>
-                          <span className="fw-bold" style={{ fontSize: '1rem', color: '#181c32' }}>
+                          <span className="fw-bold" style={{ fontSize: '1rem', color: '#0f172a' }}>
                             {user.name || user.username}
                           </span>
                           <span className="text-muted" style={{ fontSize: '0.85rem', marginTop: '4px' }}>
@@ -251,32 +249,32 @@ const Users = () => {
                         </div>
                       </td>
                       <td style={{ padding: '16px 12px' }}>
-                        <span className={`badge ${getBadgeClass(user.status)}`} style={{ padding: '6px 12px', fontSize: '0.8rem', fontWeight: 500, borderRadius: '20px' }}>
+                        <span className={`badge ${getBadgeClass(user.status)}`} style={{ padding: '6px 12px', fontSize: '0.8rem', fontWeight: 500, borderRadius: '30px' }}>
                           {user.status || 'Pending'}
                         </span>
                       </td>
-                      <td style={{ padding: '16px 12px', color: '#5e6278', fontSize: '0.9rem' }}>
+                      <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.9rem' }}>
                         {getUserField(user, 'role')}
                       </td>
-                      <td style={{ padding: '16px 12px', color: '#5e6278', fontSize: '0.9rem' }}>
+                      <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.9rem' }}>
                         {getUserField(user, 'designation')}
                       </td>
-                      <td style={{ padding: '16px 12px', color: '#5e6278', fontSize: '0.9rem' }}>
+                      <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.9rem' }}>
                         {getUserField(user, 'company')}
                       </td>
                       <td style={{ padding: '16px 20px', textAlign: 'center' }}>
                         <div className="d-flex gap-2 justify-content-center">
-                          <button className="btn btn-icon btn-light btn-sm" title="View" onClick={() => handleView(user)} style={{ padding: '8px', borderRadius: '10px' }}>
+                          <button className="btn btn-icon btn-light btn-sm" title="View" onClick={() => handleView(user)} style={{ padding: '8px', borderRadius: '12px' }}>
                             <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
                               <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path>
                             </svg>
                           </button>
-                          <button className="btn btn-icon btn-light btn-sm" title="Edit" onClick={() => handleEdit(user)} style={{ padding: '8px', borderRadius: '10px' }}>
+                          <button className="btn btn-icon btn-light btn-sm" title="Edit" onClick={() => handleEdit(user)} style={{ padding: '8px', borderRadius: '12px' }}>
                             <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
                               <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
                             </svg>
                           </button>
-                          <button className="btn btn-icon btn-light btn-sm" title="Delete" onClick={() => handleDelete(user)} style={{ padding: '8px', borderRadius: '10px' }}>
+                          <button className="btn btn-icon btn-light btn-sm" title="Delete" onClick={() => handleDelete(user)} style={{ padding: '8px', borderRadius: '12px' }}>
                             <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
                               <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path>
                             </svg>
@@ -295,12 +293,12 @@ const Users = () => {
           </div>
 
           {/* Pagination */}
-          <div className="d-flex space-between align-center" style={{ padding: '20px 24px', borderTop: '1px solid #eff2f5' }}>
+          <div className="d-flex flex-wrap gap-3 align-center justify-content-between" style={{ padding: '20px 24px', borderTop: '1px solid #eff2f5' }}>
             <div className="d-flex align-center">
               <span className="text-muted" style={{ marginRight: '12px' }}>Show</span>
               <select
                 className="form-control form-select-sm"
-                style={{ width: '70px', padding: '6px 8px', borderRadius: '8px', borderColor: '#eef0f5' }}
+                style={{ width: '70px', padding: '6px 8px', borderRadius: '20px', borderColor: '#e2e8f0' }}
                 value={rowsPerPage}
                 onChange={handleRowsPerPageChange}
               >
@@ -317,18 +315,18 @@ const Users = () => {
                 className="btn btn-sm btn-light"
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(currentPage - 1)}
-                style={{ padding: '8px 16px', borderRadius: '10px' }}
+                style={{ padding: '8px 16px', borderRadius: '30px' }}
               >
                 Previous
               </button>
-              <span className="btn btn-sm btn-primary" style={{ padding: '8px 16px', borderRadius: '10px', background: '#3e97ff', color: '#fff' }}>
+              <span className="btn btn-sm btn-primary" style={{ padding: '8px 16px', borderRadius: '30px', background: '#3e97ff', color: '#fff' }}>
                 {currentPage}
               </span>
               <button
                 className="btn btn-sm btn-light"
                 disabled={currentPage === totalPages || totalPages === 0}
                 onClick={() => setCurrentPage(currentPage + 1)}
-                style={{ padding: '8px 16px', borderRadius: '10px' }}
+                style={{ padding: '8px 16px', borderRadius: '30px' }}
               >
                 Next
               </button>
