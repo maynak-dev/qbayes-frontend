@@ -55,6 +55,16 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route
+          path="/admin/roles"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <Designations />
+              </Layout>
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
