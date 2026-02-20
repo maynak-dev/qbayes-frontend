@@ -86,7 +86,7 @@ const Sidebar = ({ open, onClose }) => {
     <div className={`admin-sidebar ${open ? 'open' : ''}`}>
       <div className="admin-sidebar-header">
         <div className="brand-logo">
-          <span>Sayan Shaw</span>
+          <span>QBayes</span>
         </div>
         <button className="sidebar-close-btn" onClick={onClose}>
           <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="24" width="24">
