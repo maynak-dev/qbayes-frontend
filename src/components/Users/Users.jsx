@@ -34,6 +34,13 @@ const Users = () => {
     fetchUsers();
   }, []);
 
+  // Debug: log the user data structure
+  useEffect(() => {
+    if (users.length > 0) {
+      console.log('User data from API:', users[0]);
+    }
+  }, [users]);
+
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
       (user.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
@@ -94,9 +101,17 @@ const Users = () => {
     setIsDeleteModalOpen(false);
   };
 
+  // Enhanced helper to safely get field from user (handles flat, nested, and missing data)
   const getUserField = (user, field) => {
-    if (user[field] !== undefined && user[field] !== null && user[field] !== '') return user[field];
-    if (user.profile && user.profile[field] !== undefined && user.profile[field] !== null && user.profile[field] !== '') return user.profile[field];
+    // Directly on user object
+    if (user[field] !== undefined && user[field] !== null && user[field] !== '') {
+      return user[field];
+    }
+    // Inside a nested profile object
+    if (user.profile && user.profile[field] !== undefined && user.profile[field] !== null && user.profile[field] !== '') {
+      return user.profile[field];
+    }
+    // Fallback
     return '-';
   };
 
