@@ -114,9 +114,6 @@ const Login = () => {
                 <span className="checkmark"></span>
                 <span className="checkbox-label">Remember me</span>
               </label>
-              <button type="button" className="forgot-link">
-                Forgot password?
-              </button>
             </div>
 
             {/* Error Message */}
@@ -144,9 +141,7 @@ const Login = () => {
               )}
             </button>
 
-            <p className="register-text">
-              Don't have an account? <a href="/register">Register here</a>
-            </p>
+            
           </form>
         </div>
       </div>

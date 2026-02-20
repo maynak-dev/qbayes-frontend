@@ -22,6 +22,7 @@ const Users = () => {
   const fetchUsers = async () => {
     try {
       const response = await api.get('/users/');
+      console.log('API response:', response.data); // 👈 check structure
       setUsers(response.data);
     } catch (err) {
       setError(err.message);
@@ -120,6 +121,13 @@ const Users = () => {
     if (status === 'Approved') return '#50cd89';
     if (status === 'Rejected') return '#f1416c';
     return '#ffc700';
+  };
+
+  // Helper to safely get field from user (supports both flat and nested profile)
+  const getUserField = (user, field) => {
+    if (user[field]) return user[field];
+    if (user.profile && user.profile[field]) return user.profile[field];
+    return '-';
   };
 
   if (loading) return <div className="admin-card">Loading users...</div>;
@@ -248,13 +256,13 @@ const Users = () => {
                         </span>
                       </td>
                       <td style={{ padding: '16px 12px', color: '#5e6278', fontSize: '0.9rem' }}>
-                        {user.role || '-'}
+                        {getUserField(user, 'role')}
                       </td>
                       <td style={{ padding: '16px 12px', color: '#5e6278', fontSize: '0.9rem' }}>
-                        {user.designation || '-'}
+                        {getUserField(user, 'designation')}
                       </td>
                       <td style={{ padding: '16px 12px', color: '#5e6278', fontSize: '0.9rem' }}>
-                        {user.company || '-'}
+                        {getUserField(user, 'company')}
                       </td>
                       <td style={{ padding: '16px 20px', textAlign: 'center' }}>
                         <div className="d-flex gap-2 justify-content-center">

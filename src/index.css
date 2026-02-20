@@ -134,7 +134,7 @@ body {
   padding: 24px;
 }
 
-/* Utility classes (unchanged, keep your existing ones) */
+/* Utility classes */
 .d-flex {
   display: flex;
 }
@@ -282,18 +282,20 @@ body {
   margin-bottom: 16px;
 }
 
-/* Dashboard grid (unchanged) */
+/* Dashboard grid – 3 columns (UPDATED) */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 24px;
 }
+
 .col-span-1 {
   grid-column: span 1;
 }
 .col-span-2 {
   grid-column: span 2;
 }
+
 @media (max-width: 1200px) {
   .dashboard-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -447,7 +449,7 @@ body {
   box-shadow: 0 0 0 3px rgba(62, 151, 255, 0.1);
 }
 
-/* Timeline (new) */
+/* Timeline */
 .timeline-item {
   display: flex;
   gap: 16px;
@@ -620,7 +622,7 @@ body {
   background: #fafbff;
 }
 
-/* Recharts customizations (keep) */
+/* Recharts customizations */
 .recharts-default-tooltip {
   background-color: #fff !important;
   border: none !important;
