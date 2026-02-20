@@ -1,23 +1,53 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../../api';
 import './NewUserModal.css';
 
 const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
+  const [roles, setRoles] = useState([]);
+  const [companies, setCompanies] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [designations, setDesignations] = useState([]);
+  const [shops, setShops] = useState([]); // optional
+
   const [formData, setFormData] = useState({
     username: '',
     name: '',
     email: '',
     phone: '',
+    role: '',
     company: '',
     location: '',
     designation: '',
+    shop: '', // optional
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const companies = ['Triton Tech', 'Optitax Inc', 'Global Services', 'Finance Corp', 'Acme Ltd'];
-  const locations = ['New York', 'London', 'Paris', 'Tokyo', 'Berlin', 'Sydney'];
-  const designations = ['HR Manager', 'Developer', 'Designer', 'Sales', 'QA Lead', 'Product Owner', 'Senior Director', 'Compliance'];
+  // Fetch all dropdown options when modal opens
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const fetchOptions = async () => {
+      try {
+        const [rolesRes, companiesRes, locationsRes, designationsRes, shopsRes] = await Promise.all([
+          api.get('/roles/'),
+          api.get('/companies/'),
+          api.get('/locations/'),
+          api.get('/designations/'),
+          api.get('/shops/').catch(() => []), // ignore if endpoint doesn't exist
+        ]);
+        setRoles(rolesRes.data);
+        setCompanies(companiesRes.data);
+        setLocations(locationsRes.data);
+        setDesignations(designationsRes.data);
+        if (shopsRes?.data) setShops(shopsRes.data);
+      } catch (err) {
+        console.error('Failed to load options', err);
+        setError('Failed to load form options. Please refresh.');
+      }
+    };
+    fetchOptions();
+  }, [isOpen]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,29 +81,27 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
     setLoading(true);
     setError('');
 
-    // Construct payload – adjust field names to match your Django backend
     const payload = {
       username: formData.username,
       email: formData.email,
       first_name: formData.name,
       phone: formData.phone,
+      role: formData.role,
       company: formData.company,
       location: formData.location,
       designation: formData.designation,
+      shop: formData.shop, // optional
     };
 
     console.log('Sending payload:', payload);
 
     try {
       const response = await api.post('/users/', payload);
-      // Assume response.data contains the created user with fields:
-      // id, username, email, first_name, etc.
-      // We'll map it to the format expected by NewUserCard
       const newUser = {
         name: response.data.first_name || response.data.username,
-        role: response.data.designation || 'New User',
-        emoji: '👤', // default emoji, can be dynamic
-        time_added: response.data.created_at || new Date().toISOString(), // use server time if available
+        role: response.data.role || 'New User',
+        emoji: '👤',
+        time_added: response.data.created_at || new Date().toISOString(),
       };
       onUserCreated(newUser);
       onClose();
@@ -82,9 +110,11 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
         name: '',
         email: '',
         phone: '',
+        role: '',
         company: '',
         location: '',
         designation: '',
+        shop: '',
       });
     } catch (err) {
       setError(extractError(err));
@@ -114,6 +144,7 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
             </div>
           )}
 
+          {/* Username */}
           <div className="input-group">
             <label htmlFor="username">Username *</label>
             <input
@@ -128,6 +159,7 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
             />
           </div>
 
+          {/* Full Name */}
           <div className="input-group">
             <label htmlFor="name">Full Name *</label>
             <input
@@ -142,6 +174,7 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
             />
           </div>
 
+          {/* Email */}
           <div className="input-group">
             <label htmlFor="email">Email *</label>
             <input
@@ -156,6 +189,7 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
             />
           </div>
 
+          {/* Phone */}
           <div className="input-group">
             <label htmlFor="phone">Phone Number</label>
             <input
@@ -169,6 +203,25 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
             />
           </div>
 
+          {/* Role Dropdown */}
+          <div className="input-group">
+            <label htmlFor="role">Role *</label>
+            <select
+              id="role"
+              name="role"
+              className="login-input"
+              value={formData.role}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select role</option>
+              {roles.map((role) => (
+                <option key={role.id} value={role.name}>{role.name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Company Dropdown */}
           <div className="input-group">
             <label htmlFor="company">Company *</label>
             <select
@@ -180,12 +233,13 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
               required
             >
               <option value="">Select company</option>
-              {companies.map((comp) => (
-                <option key={comp} value={comp}>{comp}</option>
+              {companies.map((company) => (
+                <option key={company.id} value={company.name}>{company.name}</option>
               ))}
             </select>
           </div>
 
+          {/* Location Dropdown */}
           <div className="input-group">
             <label htmlFor="location">Location *</label>
             <select
@@ -198,11 +252,12 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
             >
               <option value="">Select location</option>
               {locations.map((loc) => (
-                <option key={loc} value={loc}>{loc}</option>
+                <option key={loc.id} value={loc.name}>{loc.name}</option>
               ))}
             </select>
           </div>
 
+          {/* Designation Dropdown (from Designation model) */}
           <div className="input-group">
             <label htmlFor="designation">Designation *</label>
             <select
@@ -215,10 +270,29 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
             >
               <option value="">Select designation</option>
               {designations.map((des) => (
-                <option key={des} value={des}>{des}</option>
+                <option key={des.id} value={des.title}>{des.title}</option>
               ))}
             </select>
           </div>
+
+          {/* Shop Dropdown (optional) */}
+          {shops.length > 0 && (
+            <div className="input-group">
+              <label htmlFor="shop">Shop</label>
+              <select
+                id="shop"
+                name="shop"
+                className="login-input"
+                value={formData.shop}
+                onChange={handleChange}
+              >
+                <option value="">Select shop (optional)</option>
+                {shops.map((shop) => (
+                  <option key={shop.id} value={shop.name}>{shop.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className="modal-actions">
             <button type="button" className="btn btn-light" onClick={onClose} disabled={loading}>

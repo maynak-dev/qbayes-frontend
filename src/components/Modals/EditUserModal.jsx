@@ -3,21 +3,55 @@ import api from '../../api';
 import './NewUserModal.css';
 
 const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
+  const [roles, setRoles] = useState([]);
+  const [companies, setCompanies] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [designations, setDesignations] = useState([]);
+  const [shops, setShops] = useState([]); // optional
+
   const [formData, setFormData] = useState({
     username: '',
     name: '',
     email: '',
     phone: '',
+    role: '',
     company: '',
     location: '',
     designation: '',
+    shop: '',
     status: 'Pending',
     steps: 0,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Update form data when user changes
+  // Fetch all dropdown options when modal opens
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const fetchOptions = async () => {
+      try {
+        const [rolesRes, companiesRes, locationsRes, designationsRes, shopsRes] = await Promise.all([
+          api.get('/roles/'),
+          api.get('/companies/'),
+          api.get('/locations/'),
+          api.get('/designations/'),
+          api.get('/shops/').catch(() => []),
+        ]);
+        setRoles(rolesRes.data);
+        setCompanies(companiesRes.data);
+        setLocations(locationsRes.data);
+        setDesignations(designationsRes.data);
+        if (shopsRes?.data) setShops(shopsRes.data);
+      } catch (err) {
+        console.error('Failed to load options', err);
+        setError('Failed to load form options. Please refresh.');
+      }
+    };
+    fetchOptions();
+  }, [isOpen]);
+
+  // Populate form when user changes
   useEffect(() => {
     if (user) {
       setFormData({
@@ -25,18 +59,17 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
         name: user.name || '',
         email: user.email || '',
         phone: user.phone || '',
+        role: user.role || '',
         company: user.company || '',
         location: user.location || '',
         designation: user.designation || '',
+        shop: user.shop || '',
         status: user.status || 'Pending',
         steps: user.steps || 0,
       });
     }
   }, [user]);
 
-  const companies = ['Triton Tech', 'Optitax Inc', 'Global Services', 'Finance Corp', 'Acme Ltd'];
-  const locations = ['New York', 'London', 'Paris', 'Tokyo', 'Berlin', 'Sydney'];
-  const designations = ['HR Manager', 'Developer', 'Designer', 'Sales', 'QA Lead', 'Product Owner', 'Senior Director', 'Compliance'];
   const statuses = ['Pending', 'Approved', 'Rejected'];
 
   const handleChange = (e) => {
@@ -52,7 +85,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     const payload = {
       ...formData,
       first_name: formData.name,
-      created_at: user.created_at, // include original created_at
+      created_at: user.created_at, // include original created_at if required
     };
 
     try {
@@ -93,6 +126,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
         <form onSubmit={handleSubmit} className="modal-form">
           {error && <div className="modal-error">{error}</div>}
 
+          {/* Username */}
           <div className="input-group">
             <label htmlFor="username">Username *</label>
             <input
@@ -106,6 +140,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
             />
           </div>
 
+          {/* Full Name */}
           <div className="input-group">
             <label htmlFor="name">Full Name *</label>
             <input
@@ -119,6 +154,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
             />
           </div>
 
+          {/* Email */}
           <div className="input-group">
             <label htmlFor="email">Email *</label>
             <input
@@ -132,6 +168,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
             />
           </div>
 
+          {/* Phone */}
           <div className="input-group">
             <label htmlFor="phone">Phone Number</label>
             <input
@@ -144,6 +181,25 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
             />
           </div>
 
+          {/* Role Dropdown */}
+          <div className="input-group">
+            <label htmlFor="role">Role *</label>
+            <select
+              id="role"
+              name="role"
+              className="login-input"
+              value={formData.role}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select role</option>
+              {roles.map((role) => (
+                <option key={role.id} value={role.name}>{role.name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Company Dropdown */}
           <div className="input-group">
             <label htmlFor="company">Company *</label>
             <select
@@ -155,12 +211,13 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
               required
             >
               <option value="">Select company</option>
-              {companies.map((comp) => (
-                <option key={comp} value={comp}>{comp}</option>
+              {companies.map((company) => (
+                <option key={company.id} value={company.name}>{company.name}</option>
               ))}
             </select>
           </div>
 
+          {/* Location Dropdown */}
           <div className="input-group">
             <label htmlFor="location">Location *</label>
             <select
@@ -173,11 +230,12 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
             >
               <option value="">Select location</option>
               {locations.map((loc) => (
-                <option key={loc} value={loc}>{loc}</option>
+                <option key={loc.id} value={loc.name}>{loc.name}</option>
               ))}
             </select>
           </div>
 
+          {/* Designation Dropdown */}
           <div className="input-group">
             <label htmlFor="designation">Designation *</label>
             <select
@@ -190,11 +248,31 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
             >
               <option value="">Select designation</option>
               {designations.map((des) => (
-                <option key={des} value={des}>{des}</option>
+                <option key={des.id} value={des.title}>{des.title}</option>
               ))}
             </select>
           </div>
 
+          {/* Shop Dropdown (optional) */}
+          {shops.length > 0 && (
+            <div className="input-group">
+              <label htmlFor="shop">Shop</label>
+              <select
+                id="shop"
+                name="shop"
+                className="login-input"
+                value={formData.shop}
+                onChange={handleChange}
+              >
+                <option value="">Select shop (optional)</option>
+                {shops.map((shop) => (
+                  <option key={shop.id} value={shop.name}>{shop.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Status Dropdown */}
           <div className="input-group">
             <label htmlFor="status">Status</label>
             <select
@@ -210,6 +288,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
             </select>
           </div>
 
+          {/* Steps */}
           <div className="input-group">
             <label htmlFor="steps">Steps</label>
             <input

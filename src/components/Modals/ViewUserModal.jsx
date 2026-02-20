@@ -1,4 +1,4 @@
-import './NewUserModal.css'; // reuse styles
+import './NewUserModal.css';
 
 const ViewUserModal = ({ isOpen, onClose, user }) => {
   if (!isOpen) return null;
@@ -15,6 +15,7 @@ const ViewUserModal = ({ isOpen, onClose, user }) => {
           </button>
         </div>
         <div className="modal-form" style={{ padding: '24px' }}>
+          {/* Avatar + Name + Email */}
           <div className="d-flex align-center mb-4">
             <div
               style={{
@@ -39,6 +40,7 @@ const ViewUserModal = ({ isOpen, onClose, user }) => {
             </div>
           </div>
 
+          {/* Details Grid */}
           <div className="row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div className="info-item">
               <label className="text-muted small">Username</label>
@@ -53,12 +55,12 @@ const ViewUserModal = ({ isOpen, onClose, user }) => {
               </div>
             </div>
             <div className="info-item">
-              <label className="text-muted small">Steps</label>
-              <div className="fw-bold">{user.steps || 0}</div>
+              <label className="text-muted small">Role</label>
+              <div className="fw-bold">{user.role || '-'}</div>
             </div>
             <div className="info-item">
-              <label className="text-muted small">Created</label>
-              <div className="fw-bold">{new Date(user.created_at).toLocaleDateString()}</div>
+              <label className="text-muted small">Designation</label>
+              <div className="fw-bold">{user.designation || '-'}</div>
             </div>
             <div className="info-item">
               <label className="text-muted small">Company</label>
@@ -69,15 +71,24 @@ const ViewUserModal = ({ isOpen, onClose, user }) => {
               <div className="fw-bold">{user.location || '-'}</div>
             </div>
             <div className="info-item">
-              <label className="text-muted small">Designation</label>
-              <div className="fw-bold">{user.designation || '-'}</div>
+              <label className="text-muted small">Shop</label>
+              <div className="fw-bold">{user.shop || '-'}</div>
             </div>
             <div className="info-item">
               <label className="text-muted small">Phone</label>
               <div className="fw-bold">{user.phone || '-'}</div>
             </div>
+            <div className="info-item">
+              <label className="text-muted small">Steps</label>
+              <div className="fw-bold">{user.steps || 0}</div>
+            </div>
+            <div className="info-item">
+              <label className="text-muted small">Created</label>
+              <div className="fw-bold">{user.created_at ? new Date(user.created_at).toLocaleDateString() : '-'}</div>
+            </div>
           </div>
 
+          {/* Close Button */}
           <div className="modal-actions" style={{ marginTop: '24px' }}>
             <button type="button" className="btn btn-light" onClick={onClose}>
               Close
