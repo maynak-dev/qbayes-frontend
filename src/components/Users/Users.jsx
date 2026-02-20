@@ -22,7 +22,6 @@ const Users = () => {
   const fetchUsers = async () => {
     try {
       const response = await api.get('/users/');
-      console.log('API response:', response.data); // 👈 check structure
       setUsers(response.data);
     } catch (err) {
       setError(err.message);
@@ -35,10 +34,11 @@ const Users = () => {
     fetchUsers();
   }, []);
 
+  // Filter users by search term and status
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
-      user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email?.toLowerCase().includes(searchTerm.toLowerCase());
+      (user.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (user.email?.toLowerCase() || '').includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'All' || user.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -95,6 +95,13 @@ const Users = () => {
     setIsDeleteModalOpen(false);
   };
 
+  // Helper to safely get field from user (flat or nested profile)
+  const getUserField = (user, field) => {
+    if (user[field] !== undefined && user[field] !== null && user[field] !== '') return user[field];
+    if (user.profile && user.profile[field] !== undefined && user.profile[field] !== null && user.profile[field] !== '') return user.profile[field];
+    return '-';
+  };
+
   const getBadgeClass = (status) => {
     if (status === 'Approved') return 'badge-success';
     if (status === 'Rejected') return 'badge-danger';
@@ -123,13 +130,6 @@ const Users = () => {
     return '#ffc700';
   };
 
-  // Helper to safely get field from user (supports both flat and nested profile)
-  const getUserField = (user, field) => {
-    if (user[field]) return user[field];
-    if (user.profile && user.profile[field]) return user.profile[field];
-    return '-';
-  };
-
   if (loading) return <div className="admin-card">Loading users...</div>;
   if (error) return <div className="admin-card">Error: {error}</div>;
 
@@ -140,7 +140,7 @@ const Users = () => {
         <div className="d-flex space-between align-center mb-4">
           <div>
             <h2 className="card-title" style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '4px' }}>
-              Users Management
+              User Management
             </h2>
             <p className="text-muted" style={{ fontSize: '0.95rem' }}>
               Manage your organization's users ({totalUsers} total)
@@ -204,7 +204,7 @@ const Users = () => {
         {/* Table Card */}
         <div className="admin-card" style={{ padding: 0, overflow: 'hidden', marginTop: '20px' }}>
           <div className="table-responsive">
-            <table className="table" style={{ minWidth: '1000px', borderCollapse: 'separate', borderSpacing: '0 8px' }}>
+            <table className="table" style={{ minWidth: '1200px', borderCollapse: 'separate', borderSpacing: '0 8px' }}>
               <thead style={{ background: '#f9fafc' }}>
                 <tr>
                   <th style={{ padding: '16px 20px', fontSize: '0.85rem', fontWeight: 600, color: '#7e8299', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Profile</th>
@@ -267,13 +267,19 @@ const Users = () => {
                       <td style={{ padding: '16px 20px', textAlign: 'center' }}>
                         <div className="d-flex gap-2 justify-content-center">
                           <button className="btn btn-icon btn-light btn-sm" title="View" onClick={() => handleView(user)} style={{ padding: '8px', borderRadius: '10px' }}>
-                            <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path></svg>
+                            <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
+                              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path>
+                            </svg>
                           </button>
                           <button className="btn btn-icon btn-light btn-sm" title="Edit" onClick={() => handleEdit(user)} style={{ padding: '8px', borderRadius: '10px' }}>
-                            <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>
+                            <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
+                              <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
+                            </svg>
                           </button>
                           <button className="btn btn-icon btn-light btn-sm" title="Delete" onClick={() => handleDelete(user)} style={{ padding: '8px', borderRadius: '10px' }}>
-                            <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg>
+                            <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
+                              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path>
+                            </svg>
                           </button>
                         </div>
                       </td>
