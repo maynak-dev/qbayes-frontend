@@ -74,12 +74,12 @@ const Sidebar = ({ open, onClose }) => {
     { name: 'Users', icon: UsersIcon, path: '/admin/users' },
     // New Company Creation item
     { name: 'Company Creation', icon: CompanyIcon, path: '/admin/company-creation' },
-    { name: 'Enquiries', icon: EnquiriesIcon, path: '/admin/enquiries' },
-    { name: 'Subscribers', icon: SubscribersIcon, path: '/admin/subscribers' },
-    { name: 'Purchases', icon: PurchasesIcon, path: '/admin/purchases' },
-    { name: 'Services', icon: ServicesIcon, path: '/admin/services' },
-    { name: 'Live Calls', icon: LiveCallsIcon, path: '/admin/live-calls' },
-    { name: 'Coupons', icon: CouponsIcon, path: '/admin/coupons' },
+    // { name: 'Enquiries', icon: EnquiriesIcon, path: '/admin/enquiries' },
+    // { name: 'Subscribers', icon: SubscribersIcon, path: '/admin/subscribers' },
+    // { name: 'Purchases', icon: PurchasesIcon, path: '/admin/purchases' },
+    // { name: 'Services', icon: ServicesIcon, path: '/admin/services' },
+    // { name: 'Live Calls', icon: LiveCallsIcon, path: '/admin/live-calls' },
+    // { name: 'Coupons', icon: CouponsIcon, path: '/admin/coupons' },
   ];
 
   return (
