@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import api from '../../api';
 import NewUserModal from '../Modals/NewUserModal';
 import ViewUserModal from '../Modals/ViewUserModal';
@@ -20,9 +20,13 @@ const Users = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(null);
 
-  const fetchUsers = async () => {
+  // Fetch users with cache‑busting timestamp
+  const fetchUsers = useCallback(async () => {
     try {
-      const response = await api.get('/users/');
+      const response = await api.get('/users/', {
+        params: { _t: Date.now() } // prevent caching
+      });
+      console.log('Fetched users:', response.data);
       // Sort by newest first (id descending)
       const sorted = response.data.sort((a, b) => b.id - a.id);
       setUsers(sorted);
@@ -31,11 +35,11 @@ const Users = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [fetchUsers]);
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
@@ -89,12 +93,12 @@ const Users = () => {
   };
 
   const handleUserUpdated = () => {
-    fetchUsers();
+    fetchUsers(); // refresh after update
     setIsEditModalOpen(false);
   };
 
   const handleUserDeleted = () => {
-    fetchUsers();
+    fetchUsers(); // refresh after delete
     setIsDeleteModalOpen(false);
   };
 
@@ -103,7 +107,7 @@ const Users = () => {
     try {
       const updatedUser = { ...user, status: newStatus };
       await api.put(`/users/${user.id}/`, updatedUser);
-      fetchUsers();
+      fetchUsers(); // refresh after status change
     } catch (err) {
       console.error('Failed to update status', err);
       setError('Failed to update status. Please try again.');
@@ -112,6 +116,7 @@ const Users = () => {
     }
   };
 
+  // Helper to safely get a field (from top‑level or nested profile)
   const getUserField = (user, field) => {
     if (user[field] !== undefined && user[field] !== null && user[field] !== '') return user[field];
     if (user.profile && user.profile[field] !== undefined && user.profile[field] !== null && user.profile[field] !== '') return user.profile[field];
