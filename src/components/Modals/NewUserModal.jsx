@@ -3,11 +3,10 @@ import api from '../../api';
 import './NewUserModal.css';
 
 const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
-  const [roles, setRoles] = useState([]);
+  const [designations, setDesignations] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [locations, setLocations] = useState([]);
   const [shops, setShops] = useState([]);
-  const [designations, setDesignations] = useState([]);
 
   const [formData, setFormData] = useState({
     username: '',
@@ -17,7 +16,6 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
     role: '',
     company: '',
     location: '',
-    designation: '',
     shop: '',
   });
 
@@ -32,14 +30,12 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
 
     const fetchOptions = async () => {
       try {
-        const [rolesRes, companiesRes, designationsRes] = await Promise.all([
-          api.get('/roles/'),
-          api.get('/companies/'),
+        const [designationsRes, companiesRes] = await Promise.all([
           api.get('/designations/'),
+          api.get('/companies/'),
         ]);
-        setRoles(rolesRes.data);
-        setCompanies(companiesRes.data);
         setDesignations(designationsRes.data);
+        setCompanies(companiesRes.data);
       } catch (err) {
         console.error('Failed to load options', err);
         setError('Failed to load form options. Please refresh.');
@@ -64,7 +60,7 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
       try {
         const res = await api.get(`/locations/?company=${selectedCompany.id}`);
         setLocations(res.data);
-        // If current location not in new list, reset it
+        // Reset location if current selection not in new list
         if (res.data.length > 0 && !res.data.some(loc => loc.name === formData.location)) {
           setFormData(prev => ({ ...prev, location: '', shop: '' }));
         }
@@ -144,7 +140,6 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
       role: formData.role,
       company: formData.company,
       location: formData.location,
-      designation: formData.designation,
       shop: formData.shop,
     };
 
@@ -168,7 +163,6 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
         role: '',
         company: '',
         location: '',
-        designation: '',
         shop: '',
       });
     } catch (err) {
@@ -258,7 +252,7 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
             />
           </div>
 
-          {/* Role Dropdown */}
+          {/* Role Dropdown (from Designations) */}
           <div className="input-group">
             <label htmlFor="role">Role *</label>
             <select
@@ -270,8 +264,8 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
               required
             >
               <option value="">Select role</option>
-              {roles.map((role) => (
-                <option key={role.id} value={role.name}>{role.name}</option>
+              {designations.map((des) => (
+                <option key={des.id} value={des.title}>{des.title}</option>
               ))}
             </select>
           </div>
@@ -288,13 +282,13 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
               required
             >
               <option value="">Select company</option>
-              {companies.map((company) => (
-                <option key={company.id} value={company.name}>{company.name}</option>
+              {companies.map((comp) => (
+                <option key={comp.id} value={comp.name}>{comp.name}</option>
               ))}
             </select>
           </div>
 
-          {/* Location Dropdown */}
+          {/* Location Dropdown (cascading) */}
           <div className="input-group">
             <label htmlFor="location">Location *</label>
             <select
@@ -319,7 +313,7 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
             </select>
           </div>
 
-          {/* Shop Dropdown */}
+          {/* Shop Dropdown (cascading) */}
           <div className="input-group">
             <label htmlFor="shop">Shop</label>
             <select
@@ -339,24 +333,6 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
               </option>
               {shops.map((shop) => (
                 <option key={shop.id} value={shop.name}>{shop.name}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Designation Dropdown */}
-          <div className="input-group">
-            <label htmlFor="designation">Designation *</label>
-            <select
-              id="designation"
-              name="designation"
-              className="login-input"
-              value={formData.designation}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select designation</option>
-              {designations.map((des) => (
-                <option key={des.id} value={des.title}>{des.title}</option>
               ))}
             </select>
           </div>
