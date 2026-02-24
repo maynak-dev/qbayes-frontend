@@ -24,7 +24,7 @@ const Users = () => {
   const fetchUsers = async () => {
     try {
       const response = await api.get('/users/');
-      // Log the first user to verify structure (remove later)
+      // Log first user to check structure
       if (response.data.length > 0) {
         console.log('First user from API:', response.data[0]);
       }
@@ -297,8 +297,9 @@ const Users = () => {
                           <span className="small text-muted ms-2">Updating...</span>
                         )}
                       </td>
+                      {/* Role column – use role_details.name with fallback */}
                       <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.9rem' }}>
-                        {user.role_details?.name || '-'}
+                        {user.role_details?.name || (user.role ? `(ID: ${user.role})` : '-')}
                       </td>
                       <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.9rem' }}>
                         {getUserField(user, 'company')}
