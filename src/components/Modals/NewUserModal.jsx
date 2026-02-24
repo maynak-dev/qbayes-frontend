@@ -25,23 +25,43 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
   const [loadingShops, setLoadingShops] = useState(false);
   const [loadingRoles, setLoadingRoles] = useState(false);
 
+  // Fetch companies when modal opens
   useEffect(() => {
     if (!isOpen) return;
 
     const fetchOptions = async () => {
       try {
-        const [companiesRes] = await Promise.all([
-          api.get('/companies/'),
-        ]);
+        const [companiesRes] = await Promise.all([api.get('/companies/')]);
         setCompanies(companiesRes.data);
       } catch (err) {
-        console.error('Failed to load options', err);
-        setError('Failed to load form options. Please refresh.');
+        console.error('Failed to load companies', err);
+        setError('Failed to load companies. Please refresh.');
       }
     };
     fetchOptions();
   }, [isOpen]);
 
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setFormData({
+        username: '',
+        name: '',
+        email: '',
+        phone: '',
+        role: '',
+        company: '',
+        location: '',
+        shop: '',
+      });
+      setLocations([]);
+      setShops([]);
+      setRoles([]);
+      setError('');
+    }
+  }, [isOpen]);
+
+  // Fetch locations when company changes
   useEffect(() => {
     if (!formData.company) {
       setLocations([]);
@@ -72,6 +92,7 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
     fetchLocations();
   }, [formData.company, companies]);
 
+  // Fetch shops when location changes
   useEffect(() => {
     if (!formData.location) {
       setShops([]);
@@ -101,6 +122,7 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
     fetchShops();
   }, [formData.location, locations]);
 
+  // Fetch roles when shop changes
   useEffect(() => {
     if (!formData.shop) {
       setRoles([]);
@@ -150,21 +172,15 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
       shop: formData.shop,
     };
 
+    console.log('🔵 NewUser payload:', payload);
+
     try {
       const response = await api.post('/users/', payload);
+      console.log('🟢 NewUser response:', response.data);
       onUserCreated(response.data);
       onClose();
-      setFormData({
-        username: '',
-        name: '',
-        email: '',
-        phone: '',
-        role: '',
-        company: '',
-        location: '',
-        shop: '',
-      });
     } catch (err) {
+      console.error('🔴 NewUser error:', err.response?.data);
       const data = err.response?.data;
       let msg = 'Creation failed. ';
       if (typeof data === 'object') {

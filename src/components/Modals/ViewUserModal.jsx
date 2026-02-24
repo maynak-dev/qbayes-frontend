@@ -54,7 +54,7 @@ const ViewUserModal = ({ isOpen, onClose, user }) => {
             </div>
             <div className="info-item">
               <label className="text-muted small">Role</label>
-              <div className="fw-bold">{user.role_details?.name || (user.role ? `(ID: ${user.role})` : '-')}</div>
+              <div className="fw-bold">{user.role_details?.name || (user.role ? `(ID: ${user.role})` : 'Not assigned')}</div>
             </div>
             <div className="info-item">
               <label className="text-muted small">Company</label>

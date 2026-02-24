@@ -146,55 +146,7 @@ const Users = () => {
     return '#ffc700';
   };
 
-  // Loading skeleton
-  if (loading) {
-    return (
-      <div className="fade-in">
-        <div className="d-flex flex-wrap gap-3 align-center justify-content-between mb-4">
-          <div>
-            <div className="skeleton h-8 w-48 mb-2"></div>
-            <div className="skeleton h-4 w-64"></div>
-          </div>
-          <div className="d-flex gap-2">
-            <div className="skeleton h-10 w-10 rounded"></div>
-            <div className="skeleton h-10 w-32 rounded"></div>
-          </div>
-        </div>
-        <div className="admin-card p-4">
-          <div className="d-flex gap-3 mb-4">
-            <div className="skeleton h-12 w-64 rounded-full"></div>
-            <div className="skeleton h-12 w-32 rounded-full"></div>
-          </div>
-          <div className="table-responsive">
-            <table className="table">
-              <thead>
-                <tr>
-                  {['Profile', 'Name', 'Status', 'Role', 'Company', 'Location', 'Shop', 'Actions'].map((h) => (
-                    <th key={h}><div className="skeleton h-4 w-20"></div></th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[...Array(5)].map((_, i) => (
-                  <tr key={i}>
-                    <td><div className="skeleton w-12 h-12 rounded-full"></div></td>
-                    <td><div className="skeleton h-4 w-32 mb-2"></div><div className="skeleton h-3 w-24"></div></td>
-                    <td><div className="skeleton h-8 w-24 rounded-full"></div></td>
-                    <td><div className="skeleton h-4 w-16"></div></td>
-                    <td><div className="skeleton h-4 w-20"></div></td>
-                    <td><div className="skeleton h-4 w-20"></div></td>
-                    <td><div className="skeleton h-4 w-16"></div></td>
-                    <td><div className="d-flex gap-2"><div className="skeleton w-8 h-8 rounded"></div><div className="skeleton w-8 h-8 rounded"></div><div className="skeleton w-8 h-8 rounded"></div></div></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
+  if (loading) return <div className="admin-card">Loading users...</div>;
   if (error) return <div className="admin-card">Error: {error}</div>;
 
   return (
