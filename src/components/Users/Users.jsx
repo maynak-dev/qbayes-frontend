@@ -25,7 +25,9 @@ const Users = () => {
   const fetchUsers = async () => {
     try {
       const response = await api.get('/users/');
-      setUsers(response.data);
+      // Sort by id descending (newest first) – assumes higher id = newer user
+      const sorted = response.data.sort((a, b) => b.id - a.id);
+      setUsers(sorted);
     } catch (err) {
       setError(err.message);
     } finally {
