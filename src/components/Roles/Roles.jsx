@@ -59,7 +59,7 @@ const Roles = () => {
       return;
     }
 
-    const selectedCompany = companies.find(c => c.name === formData.company);
+    const selectedCompany = companies.find(c => c.id === parseInt(formData.company));
     if (!selectedCompany) return;
 
     const fetchLocations = async () => {
@@ -67,6 +67,10 @@ const Roles = () => {
       try {
         const res = await api.get(`/locations/?company=${selectedCompany.id}`);
         setLocations(res.data);
+        // Reset location if current selection not in new list
+        if (res.data.length > 0 && !res.data.some(loc => loc.id === parseInt(formData.location))) {
+          setFormData(prev => ({ ...prev, location: '', shop: '' }));
+        }
       } catch (err) {
         console.error('Failed to load locations', err);
       } finally {
@@ -84,7 +88,7 @@ const Roles = () => {
       return;
     }
 
-    const selectedLocation = locations.find(l => l.name === formData.location);
+    const selectedLocation = locations.find(l => l.id === parseInt(formData.location));
     if (!selectedLocation) return;
 
     const fetchShops = async () => {
@@ -114,16 +118,11 @@ const Roles = () => {
     setLoading(true);
     setError('');
 
-    // Convert company/location/shop names to IDs
-    const selectedCompany = companies.find(c => c.name === formData.company);
-    const selectedLocation = locations.find(l => l.name === formData.location);
-    const selectedShop = shops.find(s => s.name === formData.shop);
-
     const payload = {
       name: formData.name,
-      company: selectedCompany?.id,
-      location: selectedLocation?.id,
-      shop: selectedShop?.id,
+      company: parseInt(formData.company),
+      location: parseInt(formData.location),
+      shop: parseInt(formData.shop),
       role_create: formData.role_create,
       role_edit: formData.role_edit,
       role_delete: formData.role_delete,
@@ -154,9 +153,9 @@ const Roles = () => {
     setEditingId(role.id);
     setFormData({
       name: role.name,
-      company: role.company_name,
-      location: role.location_name,
-      shop: role.shop_name,
+      company: role.company,
+      location: role.location,
+      shop: role.shop,
       role_create: role.role_create,
       role_edit: role.role_edit,
       role_delete: role.role_delete,
@@ -236,7 +235,7 @@ const Roles = () => {
               >
                 <option value="">Select company</option>
                 {companies.map(c => (
-                  <option key={c.id} value={c.name}>{c.name}</option>
+                  <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
             </div>
@@ -260,7 +259,7 @@ const Roles = () => {
                     : 'Select location'}
                 </option>
                 {locations.map(l => (
-                  <option key={l.id} value={l.name}>{l.name}</option>
+                  <option key={l.id} value={l.id}>{l.name}</option>
                 ))}
               </select>
             </div>
@@ -284,7 +283,7 @@ const Roles = () => {
                     : 'Select shop'}
                 </option>
                 {shops.map(s => (
-                  <option key={s.id} value={s.name}>{s.name}</option>
+                  <option key={s.id} value={s.id}>{s.name}</option>
                 ))}
               </select>
             </div>
