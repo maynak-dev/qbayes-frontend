@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../api';
 import { useNavigate } from 'react-router-dom';
 
-const NewRolesCard = () => {
+const NewDesignationsCard = () => {
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -11,9 +11,12 @@ const NewRolesCard = () => {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        // Get the 4 most recent roles (assuming the backend orders by -created_at)
-        const response = await api.get('/roles/?ordering=-created_at&limit=4');
-        setRoles(response.data);
+        // Fetch all roles, then sort by newest and take first 4
+        const response = await api.get('/roles/');
+        const sorted = response.data.sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        );
+        setRoles(sorted.slice(0, 4));
       } catch (err) {
         setError(err.message);
       } finally {
@@ -55,9 +58,9 @@ const NewRolesCard = () => {
                   width: '10px',
                   height: '10px',
                   borderRadius: '50%',
-                  background: '#3e97ff', // consistent color or you could use role-specific colors
+                  background: '#3e97ff', // consistent accent color
                   marginTop: '5px',
-                  boxShadow: `0 0 0 3px #3e97ff20`,
+                  boxShadow: '0 0 0 3px #3e97ff20',
                 }}
               ></div>
               {index < roles.length - 1 && (
@@ -91,4 +94,4 @@ const NewRolesCard = () => {
   );
 };
 
-export default NewRolesCard;
+export default NewDesignationsCard;
