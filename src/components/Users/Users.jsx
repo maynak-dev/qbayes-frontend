@@ -106,26 +106,36 @@ const Users = () => {
     setIsDeleteModalOpen(false);
   };
 
-  const handleStatusChange = async (user, newStatus) => {
-    setUpdatingStatus(user.id);
-    try {
-      const payload = {
-        profile: {
-          status: newStatus,
-        },
-      };
-      await api.patch(`/users/${user.id}/`, payload);
-      fetchUsers();
-    } catch (err) {
-      console.error('Failed to update status', err);
-      console.error('Error response:', err.response?.data);
-      const errorMsg = err.response?.data?.detail || JSON.stringify(err.response?.data) || 'Please try again.';
-      setError(`Status update failed: ${errorMsg}`);
-    } finally {
-      setUpdatingStatus(null);
-    }
-  };
-
+const handleStatusChange = async (user, newStatus) => {
+  setUpdatingStatus(user.id);
+  try {
+    const payload = {
+      profile: {
+        status: newStatus,
+      },
+    };
+    // Send PATCH request to update only the status
+    await api.patch(`/users/${user.id}/`, payload);
+    
+    // Optimistically update the local state so the dropdown shows the new status immediately
+    setUsers(prevUsers =>
+      prevUsers.map(u =>
+        u.id === user.id
+          ? { ...u, profile: { ...u.profile, status: newStatus } }
+          : u
+      )
+    );
+  } catch (err) {
+    console.error('Failed to update status', err);
+    console.error('Error response:', err.response?.data);
+    const errorMsg = err.response?.data?.detail || JSON.stringify(err.response?.data) || 'Please try again.';
+    setError(`Status update failed: ${errorMsg}`);
+  } finally {
+    setUpdatingStatus(null);
+    // Refresh the full list to ensure consistency with the server (optional)
+    fetchUsers();
+  }
+};
   const getUserField = (user, field) => {
     if (user[field] !== undefined && user[field] !== null && user[field] !== '') return user[field];
     if (user.profile && user.profile[field] !== undefined && user.profile[field] !== null && user.profile[field] !== '') return user.profile[field];
