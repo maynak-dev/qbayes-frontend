@@ -25,6 +25,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
   const [error, setError] = useState('');
   const [loadingLocations, setLoadingLocations] = useState(false);
   const [loadingShops, setLoadingShops] = useState(false);
+  const [loadingRoles, setLoadingRoles] = useState(false);
 
   // Reset form when modal closes
   useEffect(() => {
@@ -43,6 +44,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       });
       setLocations([]);
       setShops([]);
+      setRoles([]);
       setError('');
     }
   }, [isOpen]);
@@ -53,11 +55,9 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
 
     const fetchOptions = async () => {
       try {
-        const [rolesRes, companiesRes] = await Promise.all([
-          api.get('/roles/'),
+        const [companiesRes] = await Promise.all([
           api.get('/companies/'),
         ]);
-        setRoles(rolesRes.data);
         setCompanies(companiesRes.data);
       } catch (err) {
         console.error('Failed to load options', err);
@@ -89,7 +89,9 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
   useEffect(() => {
     if (!formData.company) {
       setLocations([]);
-      setFormData(prev => ({ ...prev, location: '', shop: '' }));
+      setFormData(prev => ({ ...prev, location: '', shop: '', role: '' }));
+      setShops([]);
+      setRoles([]);
       return;
     }
 
@@ -103,7 +105,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
         setLocations(res.data);
         // Reset location if current selection not in new list
         if (res.data.length > 0 && !res.data.some(loc => loc.name === formData.location)) {
-          setFormData(prev => ({ ...prev, location: '', shop: '' }));
+          setFormData(prev => ({ ...prev, location: '', shop: '', role: '' }));
         }
       } catch (err) {
         console.error('Failed to load locations', err);
@@ -119,7 +121,8 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
   useEffect(() => {
     if (!formData.location) {
       setShops([]);
-      setFormData(prev => ({ ...prev, shop: '' }));
+      setFormData(prev => ({ ...prev, shop: '', role: '' }));
+      setRoles([]);
       return;
     }
 
@@ -131,6 +134,10 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       try {
         const res = await api.get(`/shops/?location=${selectedLocation.id}`);
         setShops(res.data);
+        // Reset shop if current selection not in new list
+        if (res.data.length > 0 && !res.data.some(s => s.name === formData.shop)) {
+          setFormData(prev => ({ ...prev, shop: '', role: '' }));
+        }
       } catch (err) {
         console.error('Failed to load shops', err);
         setError('Failed to load shops. Please try again.');
@@ -140,6 +147,37 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     };
     fetchShops();
   }, [formData.location, locations]);
+
+  // Fetch roles when shop changes
+  useEffect(() => {
+    if (!formData.shop) {
+      setRoles([]);
+      setFormData(prev => ({ ...prev, role: '' }));
+      return;
+    }
+
+    const selectedShop = shops.find(s => s.name === formData.shop);
+    if (!selectedShop) return;
+
+    const fetchRoles = async () => {
+      setLoadingRoles(true);
+      try {
+        // Assuming backend can filter roles by shop ID
+        const res = await api.get(`/roles/?shop=${selectedShop.id}`);
+        setRoles(res.data);
+        // If the current role is not in the new list, reset it
+        if (res.data.length > 0 && !res.data.some(r => r.id === parseInt(formData.role))) {
+          setFormData(prev => ({ ...prev, role: '' }));
+        }
+      } catch (err) {
+        console.error('Failed to load roles', err);
+        setError('Failed to load roles. Please try again.');
+      } finally {
+        setLoadingRoles(false);
+      }
+    };
+    fetchRoles();
+  }, [formData.shop, shops]);
 
   const statuses = ['Pending', 'Approved', 'Rejected'];
 
@@ -261,24 +299,6 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
             />
           </div>
 
-          {/* Role Dropdown */}
-          <div className="input-group">
-            <label htmlFor="role">Role *</label>
-            <select
-              id="role"
-              name="role"
-              className="login-input"
-              value={formData.role}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select role</option>
-              {roles.map((role) => (
-                <option key={role.id} value={role.id}>{role.name}</option>
-              ))}
-            </select>
-          </div>
-
           {/* Company Dropdown */}
           <div className="input-group">
             <label htmlFor="company">Company *</label>
@@ -324,13 +344,14 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
 
           {/* Shop Dropdown */}
           <div className="input-group">
-            <label htmlFor="shop">Shop</label>
+            <label htmlFor="shop">Shop *</label>
             <select
               id="shop"
               name="shop"
               className="login-input"
               value={formData.shop}
               onChange={handleChange}
+              required
               disabled={!formData.location || loadingShops}
             >
               <option value="">
@@ -338,10 +359,35 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
                   ? 'Select a location first'
                   : loadingShops
                   ? 'Loading shops...'
-                  : 'Select shop (optional)'}
+                  : 'Select shop'}
               </option>
               {shops.map((shop) => (
                 <option key={shop.id} value={shop.name}>{shop.name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Role Dropdown (filtered by shop) */}
+          <div className="input-group">
+            <label htmlFor="role">Role *</label>
+            <select
+              id="role"
+              name="role"
+              className="login-input"
+              value={formData.role}
+              onChange={handleChange}
+              required
+              disabled={!formData.shop || loadingRoles}
+            >
+              <option value="">
+                {!formData.shop
+                  ? 'Select a shop first'
+                  : loadingRoles
+                  ? 'Loading roles...'
+                  : 'Select role'}
+              </option>
+              {roles.map((role) => (
+                <option key={role.id} value={role.id}>{role.name}</option>
               ))}
             </select>
           </div>
