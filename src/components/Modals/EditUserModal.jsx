@@ -30,7 +30,6 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
   // Fetch companies when modal opens
   useEffect(() => {
     if (!isOpen) return;
-
     const fetchOptions = async () => {
       try {
         const [companiesRes] = await Promise.all([api.get('/companies/')]);
@@ -92,10 +91,8 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       setRoles([]);
       return;
     }
-
     const selectedCompany = companies.find(c => c.name === formData.company);
     if (!selectedCompany) return;
-
     const fetchLocations = async () => {
       setLoadingLocations(true);
       try {
@@ -122,10 +119,8 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       setRoles([]);
       return;
     }
-
     const selectedLocation = locations.find(l => l.name === formData.location);
     if (!selectedLocation) return;
-
     const fetchShops = async () => {
       setLoadingShops(true);
       try {
@@ -151,10 +146,8 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       setFormData(prev => ({ ...prev, role: '' }));
       return;
     }
-
     const selectedShop = shops.find(s => s.name === formData.shop);
     if (!selectedShop) return;
-
     const fetchRoles = async () => {
       setLoadingRoles(true);
       try {
