@@ -182,7 +182,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(`Changed ${name}:`, value); // 👈 ADDED LOG
+    console.log(`Changed ${name}:`, value); // 👈 Log each change
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
@@ -205,15 +205,15 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       created_at: user?.created_at,
     };
 
-    console.log('🔵 Sending payload:', payload); // 👈 ADDED LOG
+    console.log('🔵 Sending payload:', payload); // 👈 Log payload
 
     try {
       const response = await api.put(`/users/${user.id}/`, payload);
-      console.log('🟢 Update response:', response.data); // 👈 ADDED LOG
+      console.log('🟢 Update response:', response.data); // 👈 Log response
       onUserUpdated();
       onClose();
     } catch (err) {
-      console.error('🔴 Update error:', err.response?.data); // 👈 ADDED LOG
+      console.error('🔴 Update error:', err.response?.data); // 👈 Log error
       const data = err.response?.data;
       let msg = 'Update failed. ';
       if (typeof data === 'object') {
