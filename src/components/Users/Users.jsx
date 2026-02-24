@@ -24,7 +24,6 @@ const Users = () => {
   const fetchUsers = async () => {
     try {
       const response = await api.get('/users/');
-      // Log first user to check structure
       if (response.data.length > 0) {
         console.log('First user from API:', response.data[0]);
       }
@@ -105,10 +104,7 @@ const Users = () => {
   const handleStatusChange = async (user, newStatus) => {
     setUpdatingStatus(user.id);
     try {
-      const updatedUser = {
-        ...user,
-        status: newStatus,
-      };
+      const updatedUser = { ...user, status: newStatus };
       await api.put(`/users/${user.id}/`, updatedUser);
       fetchUsers();
     } catch (err) {
@@ -297,7 +293,6 @@ const Users = () => {
                           <span className="small text-muted ms-2">Updating...</span>
                         )}
                       </td>
-                      {/* Role column – use role_details.name with fallback */}
                       <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.9rem' }}>
                         {user.role_details?.name || (user.role ? `(ID: ${user.role})` : '-')}
                       </td>

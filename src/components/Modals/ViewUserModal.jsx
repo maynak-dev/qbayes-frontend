@@ -15,7 +15,6 @@ const ViewUserModal = ({ isOpen, onClose, user }) => {
           </button>
         </div>
         <div className="modal-form" style={{ padding: '24px' }}>
-          {/* Avatar + Name + Email */}
           <div className="d-flex align-center mb-4">
             <div
               style={{
@@ -40,7 +39,6 @@ const ViewUserModal = ({ isOpen, onClose, user }) => {
             </div>
           </div>
 
-          {/* Details Grid */}
           <div className="row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div className="info-item">
               <label className="text-muted small">Username</label>
@@ -56,11 +54,7 @@ const ViewUserModal = ({ isOpen, onClose, user }) => {
             </div>
             <div className="info-item">
               <label className="text-muted small">Role</label>
-              <div className="fw-bold">{user.role || '-'}</div>
-            </div>
-            <div className="info-item">
-              <label className="text-muted small">Designation</label>
-              <div className="fw-bold">{user.designation || '-'}</div>
+              <div className="fw-bold">{user.role_details?.name || (user.role ? `(ID: ${user.role})` : '-')}</div>
             </div>
             <div className="info-item">
               <label className="text-muted small">Company</label>
@@ -88,7 +82,6 @@ const ViewUserModal = ({ isOpen, onClose, user }) => {
             </div>
           </div>
 
-          {/* Close Button */}
           <div className="modal-actions" style={{ marginTop: '24px' }}>
             <button type="button" className="btn btn-light" onClick={onClose}>
               Close

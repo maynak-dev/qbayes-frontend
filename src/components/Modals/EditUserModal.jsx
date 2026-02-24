@@ -13,10 +13,10 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     name: '',
     email: '',
     phone: '',
-    role: '',           // role id (integer)
-    company: '',        // company name (string)
-    location: '',       // location name (string)
-    shop: '',           // shop name (string)
+    role: '',
+    company: '',
+    location: '',
+    shop: '',
     status: 'Pending',
     steps: 0,
   });
@@ -27,7 +27,6 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
   const [loadingShops, setLoadingShops] = useState(false);
   const [loadingRoles, setLoadingRoles] = useState(false);
 
-  // Reset form when modal closes
   useEffect(() => {
     if (!isOpen) {
       setFormData({
@@ -49,7 +48,6 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     }
   }, [isOpen]);
 
-  // Fetch base options when modal opens
   useEffect(() => {
     if (!isOpen) return;
 
@@ -67,7 +65,6 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     fetchOptions();
   }, [isOpen]);
 
-  // Populate form when user changes (modal opens with a user)
   useEffect(() => {
     if (user) {
       setFormData({
@@ -75,17 +72,16 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
         name: user.name || '',
         email: user.email || '',
         phone: user.phone || '',
-        role: user.role || '',           // role id
-        company: user.company || '',      // company name
-        location: user.location || '',    // location name
-        shop: user.shop || '',            // shop name
+        role: user.role || '',
+        company: user.company || '',
+        location: user.location || '',
+        shop: user.shop || '',
         status: user.status || 'Pending',
         steps: user.steps || 0,
       });
     }
   }, [user]);
 
-  // Fetch locations when company changes
   useEffect(() => {
     if (!formData.company) {
       setLocations([]);
@@ -103,7 +99,6 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       try {
         const res = await api.get(`/locations/?company=${selectedCompany.id}`);
         setLocations(res.data);
-        // Reset location if current selection not in new list
         if (res.data.length > 0 && !res.data.some(loc => loc.name === formData.location)) {
           setFormData(prev => ({ ...prev, location: '', shop: '', role: '' }));
         }
@@ -117,7 +112,6 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     fetchLocations();
   }, [formData.company, companies]);
 
-  // Fetch shops when location changes
   useEffect(() => {
     if (!formData.location) {
       setShops([]);
@@ -134,7 +128,6 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       try {
         const res = await api.get(`/shops/?location=${selectedLocation.id}`);
         setShops(res.data);
-        // Reset shop if current selection not in new list
         if (res.data.length > 0 && !res.data.some(s => s.name === formData.shop)) {
           setFormData(prev => ({ ...prev, shop: '', role: '' }));
         }
@@ -148,7 +141,6 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     fetchShops();
   }, [formData.location, locations]);
 
-  // Fetch roles when shop changes
   useEffect(() => {
     if (!formData.shop) {
       setRoles([]);
@@ -162,10 +154,8 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     const fetchRoles = async () => {
       setLoadingRoles(true);
       try {
-        // Assuming backend can filter roles by shop ID
         const res = await api.get(`/roles/?shop=${selectedShop.id}`);
         setRoles(res.data);
-        // If the current role is not in the new list, reset it
         if (res.data.length > 0 && !res.data.some(r => r.id === parseInt(formData.role))) {
           setFormData(prev => ({ ...prev, role: '' }));
         }
@@ -183,7 +173,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -196,13 +186,12 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       email: formData.email,
       first_name: formData.name,
       phone: formData.phone,
-      role: formData.role ? parseInt(formData.role) : null,   // send as integer ID
-      company: formData.company,    // send as string (matches Profile.company field)
-      location: formData.location,  // send as string
-      shop: formData.shop,          // send as string
+      role: formData.role ? parseInt(formData.role) : null,
+      company: formData.company,
+      location: formData.location,
+      shop: formData.shop,
       status: formData.status,
       steps: parseInt(formData.steps),
-      // created_at is read‑only; include only if backend requires it
       created_at: user?.created_at,
     };
 
@@ -367,7 +356,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
             </select>
           </div>
 
-          {/* Role Dropdown (filtered by shop) */}
+          {/* Role Dropdown */}
           <div className="input-group">
             <label htmlFor="role">Role *</label>
             <select
