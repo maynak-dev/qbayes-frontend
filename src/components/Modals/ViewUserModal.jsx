@@ -47,34 +47,34 @@ const ViewUserModal = ({ isOpen, onClose, user }) => {
             <div className="info-item">
               <label className="text-muted small">Status</label>
               <div>
-                <span className={`badge ${user.status === 'Approved' ? 'badge-success' : user.status === 'Rejected' ? 'badge-danger' : 'badge-warning'}`}>
-                  {user.status || 'Pending'}
+                <span className={`badge ${user.profile?.status === 'Approved' ? 'badge-success' : user.profile?.status === 'Rejected' ? 'badge-danger' : 'badge-warning'}`}>
+                  {user.profile?.status || 'Pending'}
                 </span>
               </div>
             </div>
             <div className="info-item">
               <label className="text-muted small">Role</label>
-              <div className="fw-bold">{user.role_details?.name || (user.role ? `(ID: ${user.role})` : 'Not assigned')}</div>
+              <div className="fw-bold">{user.role_details?.name || 'Not assigned'}</div>
             </div>
             <div className="info-item">
               <label className="text-muted small">Company</label>
-              <div className="fw-bold">{user.company || '-'}</div>
+              <div className="fw-bold">{user.profile?.company || '-'}</div>
             </div>
             <div className="info-item">
               <label className="text-muted small">Location</label>
-              <div className="fw-bold">{user.location || '-'}</div>
+              <div className="fw-bold">{user.profile?.location || '-'}</div>
             </div>
             <div className="info-item">
               <label className="text-muted small">Shop</label>
-              <div className="fw-bold">{user.shop || '-'}</div>
+              <div className="fw-bold">{user.profile?.shop || '-'}</div>
             </div>
             <div className="info-item">
               <label className="text-muted small">Phone</label>
-              <div className="fw-bold">{user.phone || '-'}</div>
+              <div className="fw-bold">{user.profile?.phone || '-'}</div>
             </div>
             <div className="info-item">
               <label className="text-muted small">Steps</label>
-              <div className="fw-bold">{user.steps || 0}</div>
+              <div className="fw-bold">{user.profile?.steps || 0}</div>
             </div>
             <div className="info-item">
               <label className="text-muted small">Created</label>
