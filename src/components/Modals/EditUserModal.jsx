@@ -3,7 +3,7 @@ import api from '../../api';
 import './NewUserModal.css';
 
 const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
-  const [designations, setDesignations] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [locations, setLocations] = useState([]);
   const [shops, setShops] = useState([]);
@@ -32,11 +32,11 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
 
     const fetchOptions = async () => {
       try {
-        const [designationsRes, companiesRes] = await Promise.all([
-          api.get('/designations/'),
+        const [rolesRes, companiesRes] = await Promise.all([
+          api.get('/user-roles/'),
           api.get('/companies/'),
         ]);
-        setDesignations(designationsRes.data);
+        setRoles(rolesRes.data);
         setCompanies(companiesRes.data);
       } catch (err) {
         console.error('Failed to load options', err);
@@ -54,7 +54,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
         name: user.name || '',
         email: user.email || '',
         phone: user.phone || '',
-        role: user.role || '',
+        role: user.role || '', // role id (or null)
         company: user.company || '',
         location: user.location || '',
         shop: user.shop || '',
@@ -135,7 +135,8 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     const payload = {
       ...formData,
       first_name: formData.name,
-      created_at: user.created_at,
+      role: formData.role ? parseInt(formData.role) : null,
+      created_at: user.created_at, // keep original
     };
 
     try {
@@ -231,7 +232,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
             />
           </div>
 
-          {/* Role Dropdown (from Designations) */}
+          {/* Role Dropdown */}
           <div className="input-group">
             <label htmlFor="role">Role *</label>
             <select
@@ -243,8 +244,8 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
               required
             >
               <option value="">Select role</option>
-              {designations.map((des) => (
-                <option key={des.id} value={des.title}>{des.title}</option>
+              {roles.map((role) => (
+                <option key={role.id} value={role.id}>{role.name}</option>
               ))}
             </select>
           </div>
@@ -267,7 +268,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
             </select>
           </div>
 
-          {/* Location Dropdown (cascading) */}
+          {/* Location Dropdown */}
           <div className="input-group">
             <label htmlFor="location">Location *</label>
             <select
@@ -292,7 +293,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
             </select>
           </div>
 
-          {/* Shop Dropdown (cascading) */}
+          {/* Shop Dropdown */}
           <div className="input-group">
             <label htmlFor="shop">Shop</label>
             <select

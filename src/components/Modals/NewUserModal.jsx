@@ -3,7 +3,7 @@ import api from '../../api';
 import './NewUserModal.css';
 
 const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
-  const [designations, setDesignations] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [locations, setLocations] = useState([]);
   const [shops, setShops] = useState([]);
@@ -13,7 +13,7 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
     name: '',
     email: '',
     phone: '',
-    role: '',
+    role: '',           // role id
     company: '',
     location: '',
     shop: '',
@@ -30,11 +30,11 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
 
     const fetchOptions = async () => {
       try {
-        const [designationsRes, companiesRes] = await Promise.all([
-          api.get('/designations/'),
+        const [rolesRes, companiesRes] = await Promise.all([
+          api.get('/user-roles/'),
           api.get('/companies/'),
         ]);
-        setDesignations(designationsRes.data);
+        setRoles(rolesRes.data);
         setCompanies(companiesRes.data);
       } catch (err) {
         console.error('Failed to load options', err);
@@ -137,7 +137,7 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
       email: formData.email,
       first_name: formData.name,
       phone: formData.phone,
-      role: formData.role,
+      role: formData.role ? parseInt(formData.role) : null, // send id
       company: formData.company,
       location: formData.location,
       shop: formData.shop,
@@ -149,7 +149,7 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
       const response = await api.post('/users/', payload);
       const newUser = {
         name: response.data.first_name || response.data.username,
-        role: response.data.role || 'New User',
+        role: response.data.role_details?.name || 'New User',
         emoji: '👤',
         time_added: response.data.created_at || new Date().toISOString(),
       };
@@ -252,7 +252,7 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
             />
           </div>
 
-          {/* Role Dropdown (from Designations) */}
+          {/* Role Dropdown */}
           <div className="input-group">
             <label htmlFor="role">Role *</label>
             <select
@@ -264,8 +264,8 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
               required
             >
               <option value="">Select role</option>
-              {designations.map((des) => (
-                <option key={des.id} value={des.title}>{des.title}</option>
+              {roles.map((role) => (
+                <option key={role.id} value={role.id}>{role.name}</option>
               ))}
             </select>
           </div>
@@ -288,7 +288,7 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
             </select>
           </div>
 
-          {/* Location Dropdown (cascading) */}
+          {/* Location Dropdown */}
           <div className="input-group">
             <label htmlFor="location">Location *</label>
             <select
@@ -313,7 +313,7 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
             </select>
           </div>
 
-          {/* Shop Dropdown (cascading) */}
+          {/* Shop Dropdown */}
           <div className="input-group">
             <label htmlFor="shop">Shop</label>
             <select
