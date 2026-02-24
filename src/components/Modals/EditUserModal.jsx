@@ -27,6 +27,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
   const [loadingShops, setLoadingShops] = useState(false);
   const [loadingRoles, setLoadingRoles] = useState(false);
 
+  // Reset form when modal closes
   useEffect(() => {
     if (!isOpen) {
       setFormData({
@@ -48,6 +49,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     }
   }, [isOpen]);
 
+  // Fetch base options when modal opens
   useEffect(() => {
     if (!isOpen) return;
 
@@ -65,6 +67,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     fetchOptions();
   }, [isOpen]);
 
+  // Populate form when user changes (modal opens with a user)
   useEffect(() => {
     if (user) {
       setFormData({
@@ -82,6 +85,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     }
   }, [user]);
 
+  // Fetch locations when company changes
   useEffect(() => {
     if (!formData.company) {
       setLocations([]);
@@ -99,6 +103,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       try {
         const res = await api.get(`/locations/?company=${selectedCompany.id}`);
         setLocations(res.data);
+        // Reset location if current selection not in new list
         if (res.data.length > 0 && !res.data.some(loc => loc.name === formData.location)) {
           setFormData(prev => ({ ...prev, location: '', shop: '', role: '' }));
         }
@@ -112,6 +117,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     fetchLocations();
   }, [formData.company, companies]);
 
+  // Fetch shops when location changes
   useEffect(() => {
     if (!formData.location) {
       setShops([]);
@@ -128,6 +134,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       try {
         const res = await api.get(`/shops/?location=${selectedLocation.id}`);
         setShops(res.data);
+        // Reset shop if current selection not in new list
         if (res.data.length > 0 && !res.data.some(s => s.name === formData.shop)) {
           setFormData(prev => ({ ...prev, shop: '', role: '' }));
         }
@@ -141,6 +148,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     fetchShops();
   }, [formData.location, locations]);
 
+  // Fetch roles when shop changes
   useEffect(() => {
     if (!formData.shop) {
       setRoles([]);
@@ -156,6 +164,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       try {
         const res = await api.get(`/roles/?shop=${selectedShop.id}`);
         setRoles(res.data);
+        // If the current role is not in the new list, reset it
         if (res.data.length > 0 && !res.data.some(r => r.id === parseInt(formData.role))) {
           setFormData(prev => ({ ...prev, role: '' }));
         }
@@ -173,6 +182,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log(`Changed ${name}:`, value); // 👈 ADDED LOG
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
@@ -195,11 +205,15 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       created_at: user?.created_at,
     };
 
+    console.log('🔵 Sending payload:', payload); // 👈 ADDED LOG
+
     try {
-      await api.put(`/users/${user.id}/`, payload);
+      const response = await api.put(`/users/${user.id}/`, payload);
+      console.log('🟢 Update response:', response.data); // 👈 ADDED LOG
       onUserUpdated();
       onClose();
     } catch (err) {
+      console.error('🔴 Update error:', err.response?.data); // 👈 ADDED LOG
       const data = err.response?.data;
       let msg = 'Update failed. ';
       if (typeof data === 'object') {
