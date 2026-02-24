@@ -69,6 +69,7 @@ const Users = () => {
 
   const handleUserCreated = () => {
     fetchUsers();
+    setCurrentPage(1);
     setIsNewModalOpen(false);
   };
 
