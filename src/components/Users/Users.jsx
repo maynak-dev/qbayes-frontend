@@ -19,6 +19,9 @@ const Users = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+  // Track which user's status is being updated (for loading state)
+  const [updatingStatus, setUpdatingStatus] = useState(null);
+
   const fetchUsers = async () => {
     try {
       const response = await api.get('/users/');
@@ -33,13 +36,6 @@ const Users = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
-
-  // Debug: log the user data structure
-  useEffect(() => {
-    if (users.length > 0) {
-      console.log('User data from API:', users[0]);
-    }
-  }, [users]);
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
@@ -101,17 +97,29 @@ const Users = () => {
     setIsDeleteModalOpen(false);
   };
 
-  // Enhanced helper to safely get field from user (handles flat, nested, and missing data)
+  // Handle status change from dropdown
+  const handleStatusChange = async (user, newStatus) => {
+    setUpdatingStatus(user.id);
+    try {
+      // Prepare the updated user object (send all fields, but you could also send only status via PATCH)
+      const updatedUser = {
+        ...user,
+        status: newStatus,
+      };
+      await api.put(`/users/${user.id}/`, updatedUser);
+      // Refresh the list to reflect changes
+      fetchUsers();
+    } catch (err) {
+      console.error('Failed to update status', err);
+      setError('Failed to update status. Please try again.');
+    } finally {
+      setUpdatingStatus(null);
+    }
+  };
+
   const getUserField = (user, field) => {
-    // Directly on user object
-    if (user[field] !== undefined && user[field] !== null && user[field] !== '') {
-      return user[field];
-    }
-    // Inside a nested profile object
-    if (user.profile && user.profile[field] !== undefined && user.profile[field] !== null && user.profile[field] !== '') {
-      return user.profile[field];
-    }
-    // Fallback
+    if (user[field] !== undefined && user[field] !== null && user[field] !== '') return user[field];
+    if (user.profile && user.profile[field] !== undefined && user.profile[field] !== null && user.profile[field] !== '') return user.profile[field];
     return '-';
   };
 
@@ -226,8 +234,9 @@ const Users = () => {
                   </th>
                   <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Status</th>
                   <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Role</th>
-                  <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Designation</th>
                   <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Company</th>
+                  <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Location</th>
+                  <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Shop</th>
                   <th style={{ padding: '16px 20px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center' }}>Actions</th>
                 </tr>
               </thead>
@@ -264,18 +273,39 @@ const Users = () => {
                         </div>
                       </td>
                       <td style={{ padding: '16px 12px' }}>
-                        <span className={`badge ${getBadgeClass(user.status)}`} style={{ padding: '6px 12px', fontSize: '0.8rem', fontWeight: 500, borderRadius: '30px' }}>
-                          {user.status || 'Pending'}
-                        </span>
+                        <select
+                          className="form-control form-select-sm"
+                          value={user.status || 'Pending'}
+                          onChange={(e) => handleStatusChange(user, e.target.value)}
+                          disabled={updatingStatus === user.id}
+                          style={{
+                            padding: '6px 12px',
+                            borderRadius: '30px',
+                            border: '1px solid #e2e8f0',
+                            backgroundColor: '#fff',
+                            fontWeight: 500,
+                            color: user.status === 'Approved' ? '#1d874b' : user.status === 'Rejected' ? '#b42318' : '#b45b0e',
+                          }}
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="Approved">Approved</option>
+                          <option value="Rejected">Rejected</option>
+                        </select>
+                        {updatingStatus === user.id && (
+                          <span className="small text-muted ms-2">Updating...</span>
+                        )}
                       </td>
                       <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.9rem' }}>
                         {getUserField(user, 'role')}
                       </td>
                       <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.9rem' }}>
-                        {getUserField(user, 'designation')}
+                        {getUserField(user, 'company')}
                       </td>
                       <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.9rem' }}>
-                        {getUserField(user, 'company')}
+                        {getUserField(user, 'location')}
+                      </td>
+                      <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.9rem' }}>
+                        {getUserField(user, 'shop')}
                       </td>
                       <td style={{ padding: '16px 20px', textAlign: 'center' }}>
                         <div className="d-flex gap-2 justify-content-center">
@@ -300,7 +330,7 @@ const Users = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="7" className="text-center py-5 text-muted" style={{ fontSize: '1rem' }}>No users found</td>
+                    <td colSpan="8" className="text-center py-5 text-muted" style={{ fontSize: '1rem' }}>No users found</td>
                   </tr>
                 )}
               </tbody>
