@@ -75,10 +75,17 @@ const Users = () => {
     setIsNewModalOpen(false);
   };
 
-  const handleView = (user) => {
-    setSelectedUser(user);
+const handleView = async (user) => {
+  try {
+    // Fetch full user details to ensure we have all profile fields
+    const response = await api.get(`/users/${user.id}/`);
+    setSelectedUser(response.data);
     setIsViewModalOpen(true);
-  };
+  } catch (err) {
+    console.error('Failed to fetch user details', err);
+    setError('Failed to load user details.');
+  }
+};
 
   const handleEdit = (user) => {
     setSelectedUser(user);
