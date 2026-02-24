@@ -19,13 +19,15 @@ const Users = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  // Track which user's status is being updated (for loading state)
   const [updatingStatus, setUpdatingStatus] = useState(null);
 
   const fetchUsers = async () => {
     try {
       const response = await api.get('/users/');
-      // Sort by id descending (newest first) – assumes higher id = newer user
+      // Log the first user to verify structure (remove later)
+      if (response.data.length > 0) {
+        console.log('First user from API:', response.data[0]);
+      }
       const sorted = response.data.sort((a, b) => b.id - a.id);
       setUsers(sorted);
     } catch (err) {
@@ -100,17 +102,14 @@ const Users = () => {
     setIsDeleteModalOpen(false);
   };
 
-  // Handle status change from dropdown
   const handleStatusChange = async (user, newStatus) => {
     setUpdatingStatus(user.id);
     try {
-      // Prepare the updated user object (send all fields, but you could also send only status via PATCH)
       const updatedUser = {
         ...user,
         status: newStatus,
       };
       await api.put(`/users/${user.id}/`, updatedUser);
-      // Refresh the list to reflect changes
       fetchUsers();
     } catch (err) {
       console.error('Failed to update status', err);
@@ -298,7 +297,6 @@ const Users = () => {
                           <span className="small text-muted ms-2">Updating...</span>
                         )}
                       </td>
-                      {/* Role column – use role_details.name */}
                       <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.9rem' }}>
                         {user.role_details?.name || '-'}
                       </td>
