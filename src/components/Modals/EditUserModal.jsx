@@ -33,7 +33,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     const fetchOptions = async () => {
       try {
         const [rolesRes, companiesRes] = await Promise.all([
-          api.get('/user-roles/'),
+          api.get('/roles/'),
           api.get('/companies/'),
         ]);
         setRoles(rolesRes.data);
@@ -46,7 +46,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     fetchOptions();
   }, [isOpen]);
 
-  // Populate form when user changes
+  // Populate form when user changes (modal opens with a user)
   useEffect(() => {
     if (user) {
       setFormData({
@@ -133,10 +133,18 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     setError('');
 
     const payload = {
-      ...formData,
+      username: formData.username,
+      email: formData.email,
       first_name: formData.name,
+      phone: formData.phone,
       role: formData.role ? parseInt(formData.role) : null,
-      created_at: user.created_at, // keep original
+      company: formData.company,
+      location: formData.location,
+      shop: formData.shop,
+      status: formData.status,
+      steps: parseInt(formData.steps),
+      // include created_at if the backend requires it (should be read‑only)
+      created_at: user.created_at,
     };
 
     try {
