@@ -13,10 +13,10 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     name: '',
     email: '',
     phone: '',
-    role: '',
-    company: '',
-    location: '',
-    shop: '',
+    role: '',           // role id (integer)
+    company: '',        // company name (string)
+    location: '',       // location name (string)
+    shop: '',           // shop name (string)
     status: 'Pending',
     steps: 0,
   });
@@ -25,6 +25,27 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
   const [error, setError] = useState('');
   const [loadingLocations, setLoadingLocations] = useState(false);
   const [loadingShops, setLoadingShops] = useState(false);
+
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setFormData({
+        username: '',
+        name: '',
+        email: '',
+        phone: '',
+        role: '',
+        company: '',
+        location: '',
+        shop: '',
+        status: 'Pending',
+        steps: 0,
+      });
+      setLocations([]);
+      setShops([]);
+      setError('');
+    }
+  }, [isOpen]);
 
   // Fetch base options when modal opens
   useEffect(() => {
@@ -54,10 +75,10 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
         name: user.name || '',
         email: user.email || '',
         phone: user.phone || '',
-        role: user.role || '', // role id (or null)
-        company: user.company || '',
-        location: user.location || '',
-        shop: user.shop || '',
+        role: user.role || '',           // role id
+        company: user.company || '',      // company name
+        location: user.location || '',    // location name
+        shop: user.shop || '',            // shop name
         status: user.status || 'Pending',
         steps: user.steps || 0,
       });
@@ -137,14 +158,14 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       email: formData.email,
       first_name: formData.name,
       phone: formData.phone,
-      role: formData.role ? parseInt(formData.role) : null,
-      company: formData.company,
-      location: formData.location,
-      shop: formData.shop,
+      role: formData.role ? parseInt(formData.role) : null,   // send as integer ID
+      company: formData.company,    // send as string (matches Profile.company field)
+      location: formData.location,  // send as string
+      shop: formData.shop,          // send as string
       status: formData.status,
       steps: parseInt(formData.steps),
-      // include created_at if the backend requires it (should be read‑only)
-      created_at: user.created_at,
+      // created_at is read‑only; include only if backend requires it
+      created_at: user?.created_at,
     };
 
     try {
