@@ -25,12 +25,10 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  // UI states for cascading dropdowns
   const [loadingLocations, setLoadingLocations] = useState(false);
   const [loadingShops, setLoadingShops] = useState(false);
 
-  // Fetch all base options when modal opens
+  // Fetch base options when modal opens
   useEffect(() => {
     if (!isOpen) return;
 
@@ -79,16 +77,21 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       return;
     }
 
+    const selectedCompany = companies.find(c => c.name === formData.company);
+    if (!selectedCompany) return;
+
     const fetchLocations = async () => {
       setLoadingLocations(true);
       try {
-        // Need to find company ID from name (since dropdown value is name)
-        const selectedCompany = companies.find(c => c.name === formData.company);
-        if (!selectedCompany) return;
         const res = await api.get(`/locations/?company=${selectedCompany.id}`);
         setLocations(res.data);
+        // If current location not in new list, reset it
+        if (res.data.length > 0 && !res.data.some(loc => loc.name === formData.location)) {
+          setFormData(prev => ({ ...prev, location: '', shop: '' }));
+        }
       } catch (err) {
         console.error('Failed to load locations', err);
+        setError('Failed to load locations. Please try again.');
       } finally {
         setLoadingLocations(false);
       }
@@ -104,16 +107,17 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       return;
     }
 
+    const selectedLocation = locations.find(l => l.name === formData.location);
+    if (!selectedLocation) return;
+
     const fetchShops = async () => {
       setLoadingShops(true);
       try {
-        // Find location ID from name
-        const selectedLocation = locations.find(l => l.name === formData.location);
-        if (!selectedLocation) return;
         const res = await api.get(`/shops/?location=${selectedLocation.id}`);
         setShops(res.data);
       } catch (err) {
         console.error('Failed to load shops', err);
+        setError('Failed to load shops. Please try again.');
       } finally {
         setLoadingShops(false);
       }
@@ -268,7 +272,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
             </select>
           </div>
 
-          {/* Location Dropdown - depends on selected company */}
+          {/* Location Dropdown */}
           <div className="input-group">
             <label htmlFor="location">Location *</label>
             <select
@@ -293,7 +297,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
             </select>
           </div>
 
-          {/* Shop Dropdown - depends on selected location */}
+          {/* Shop Dropdown */}
           <div className="input-group">
             <label htmlFor="shop">Shop</label>
             <select

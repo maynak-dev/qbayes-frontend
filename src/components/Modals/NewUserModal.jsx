@@ -23,12 +23,10 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  // UI states for cascading dropdowns
   const [loadingLocations, setLoadingLocations] = useState(false);
   const [loadingShops, setLoadingShops] = useState(false);
 
-  // Fetch all base options when modal opens
+  // Fetch base options when modal opens
   useEffect(() => {
     if (!isOpen) return;
 
@@ -58,19 +56,27 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
       return;
     }
 
+    const selectedCompany = companies.find(c => c.name === formData.company);
+    if (!selectedCompany) return;
+
     const fetchLocations = async () => {
       setLoadingLocations(true);
       try {
-        const res = await api.get(`/locations/?company=${formData.company}`);
+        const res = await api.get(`/locations/?company=${selectedCompany.id}`);
         setLocations(res.data);
+        // If current location not in new list, reset it
+        if (res.data.length > 0 && !res.data.some(loc => loc.name === formData.location)) {
+          setFormData(prev => ({ ...prev, location: '', shop: '' }));
+        }
       } catch (err) {
         console.error('Failed to load locations', err);
+        setError('Failed to load locations. Please try again.');
       } finally {
         setLoadingLocations(false);
       }
     };
     fetchLocations();
-  }, [formData.company]);
+  }, [formData.company, companies]);
 
   // Fetch shops when location changes
   useEffect(() => {
@@ -80,19 +86,23 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
       return;
     }
 
+    const selectedLocation = locations.find(l => l.name === formData.location);
+    if (!selectedLocation) return;
+
     const fetchShops = async () => {
       setLoadingShops(true);
       try {
-        const res = await api.get(`/shops/?location=${formData.location}`);
+        const res = await api.get(`/shops/?location=${selectedLocation.id}`);
         setShops(res.data);
       } catch (err) {
         console.error('Failed to load shops', err);
+        setError('Failed to load shops. Please try again.');
       } finally {
         setLoadingShops(false);
       }
     };
     fetchShops();
-  }, [formData.location]);
+  }, [formData.location, locations]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -284,7 +294,7 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
             </select>
           </div>
 
-          {/* Location Dropdown - depends on selected company */}
+          {/* Location Dropdown */}
           <div className="input-group">
             <label htmlFor="location">Location *</label>
             <select
@@ -309,7 +319,7 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
             </select>
           </div>
 
-          {/* Shop Dropdown - depends on selected location */}
+          {/* Shop Dropdown */}
           <div className="input-group">
             <label htmlFor="shop">Shop</label>
             <select
