@@ -195,7 +195,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     console.log('🔵 Edit payload:', payload);
 
     try {
-      const response = await api.put(`/users/${user.id}/`, payload);
+      const response = await api.put(`/profiles/${user.id}/`, payload);
       console.log('🟢 Edit response:', response.data);
       onUserUpdated();
       onClose();
