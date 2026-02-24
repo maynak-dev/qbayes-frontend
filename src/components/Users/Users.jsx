@@ -100,19 +100,27 @@ const Users = () => {
     setIsDeleteModalOpen(false);
   };
 
-  const handleStatusChange = async (user, newStatus) => {
-    setUpdatingStatus(user.id);
-    try {
-      const updatedUser = { ...user, status: newStatus };
-      await api.put(`/users/${user.id}/`, updatedUser);
-      fetchUsers(); // refresh after status change
-    } catch (err) {
-      console.error('Failed to update status', err);
-      setError('Failed to update status. Please try again.');
-    } finally {
-      setUpdatingStatus(null);
-    }
-  };
+// ... (all imports and state remain the same)
+
+const handleStatusChange = async (user, newStatus) => {
+  setUpdatingStatus(user.id);
+  try {
+    // Send only the status update inside the nested profile
+    const payload = {
+      profile: {
+        status: newStatus,
+      },
+    };
+    await api.put(`/users/${user.id}/`, payload);
+    fetchUsers(); // refresh after status change
+  } catch (err) {
+    console.error('Failed to update status', err);
+    setError('Failed to update status. Please try again.');
+  } finally {
+    setUpdatingStatus(null);
+  }
+};
+
 
   const getUserField = (user, field) => {
     if (user[field] !== undefined && user[field] !== null && user[field] !== '') return user[field];

@@ -149,46 +149,52 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError('');
 
-    const payload = {
-      username: formData.username,
-      email: formData.email,
-      first_name: formData.name,
+  const payload = {
+    username: formData.username,
+    email: formData.email,
+    profile: {
+      first_name: formData.name,  // Note: we need to map name to first_name in the profile? Actually profile doesn't have first_name. We'll discuss.
+      // But the profile model does NOT have name/first_name – that belongs to the user.
+      // So we need to split: user fields go top-level, profile fields go inside profile.
       phone: formData.phone,
       role: formData.role ? parseInt(formData.role) : null,
       company: formData.company,
       location: formData.location,
       shop: formData.shop,
-    };
-
-    console.log('🔵 NewUser payload:', payload);
-
-    try {
-      const response = await api.post('/users/', payload);
-      console.log('🟢 NewUser response:', response.data);
-      onUserCreated(response.data);
-      onClose();
-    } catch (err) {
-      console.error('🔴 NewUser error:', err.response?.data);
-      const data = err.response?.data;
-      let msg = 'Creation failed. ';
-      if (typeof data === 'object') {
-        const errors = Object.entries(data)
-          .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`)
-          .join('; ');
-        msg += errors;
-      } else {
-        msg += 'Please try again.';
-      }
-      setError(msg);
-    } finally {
-      setLoading(false);
-    }
+      status: formData.status,     // if you want to set status at creation
+      steps: parseInt(formData.steps),
+    },
   };
+
+  console.log('🔵 NewUser payload:', payload);
+
+  try {
+    const response = await api.post('/users/', payload);
+    console.log('🟢 NewUser response:', response.data);
+    onUserCreated(response.data);
+    onClose();
+  } catch (err) {
+    console.error('🔴 NewUser error:', err.response?.data);
+    const data = err.response?.data;
+    let msg = 'Creation failed. ';
+    if (typeof data === 'object') {
+      const errors = Object.entries(data)
+        .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`)
+        .join('; ');
+      msg += errors;
+    } else {
+      msg += 'Please try again.';
+    }
+    setError(msg);
+  } finally {
+    setLoading(false);
+  }
+};
 
   if (!isOpen) return null;
 

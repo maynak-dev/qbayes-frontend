@@ -173,42 +173,35 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
   setError('');
 
-  // 1. Update user fields (username, email)
-  const userPayload = {
+  const payload = {
     username: formData.username,
     email: formData.email,
+    first_name: formData.name,
+    profile: {
+      phone: formData.phone,
+      role: formData.role ? parseInt(formData.role) : null,
+      company: formData.company,
+      location: formData.location,
+      shop: formData.shop,
+      status: formData.status,
+      steps: parseInt(formData.steps),
+    },
   };
 
-  // 2. Update profile fields (all other fields)
-  const profilePayload = {
-    role: formData.role ? parseInt(formData.role) : null,
-    phone: formData.phone,
-    status: formData.status,
-    steps: parseInt(formData.steps),
-    company: formData.company,
-    location: formData.location,
-    shop: formData.shop,
-  };
-
-  console.log('🔵 User payload:', userPayload);
-  console.log('🔵 Profile payload:', profilePayload);
+  console.log('🔵 Edit payload:', payload);
 
   try {
-    // Update user
-    await api.put(`/users/${user.id}/`, userPayload);
-
-    // Update profile
-    await api.put(`/profiles/${user.id}/`, profilePayload);
-
+    const response = await api.put(`/users/${user.id}/`, payload);
+    console.log('🟢 Edit response:', response.data);
     onUserUpdated();
     onClose();
   } catch (err) {
-    console.error('🔴 Update error:', err.response?.data);
+    console.error('🔴 Edit error:', err.response?.data);
     const data = err.response?.data;
     let msg = 'Update failed. ';
     if (typeof data === 'object') {
