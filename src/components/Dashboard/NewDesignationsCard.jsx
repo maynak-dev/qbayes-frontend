@@ -11,12 +11,13 @@ const NewDesignationsCard = () => {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        // Fetch all roles, then sort by newest and take first 4
+        // Fetch roles from the roles endpoint
         const response = await api.get('/roles/');
+        // Sort by newest first (assuming 'created_at' field)
         const sorted = response.data.sort(
           (a, b) => new Date(b.created_at) - new Date(a.created_at)
         );
-        setRoles(sorted.slice(0, 4));
+        setRoles(sorted.slice(0, 4)); // take the 4 most recent
       } catch (err) {
         setError(err.message);
       } finally {
@@ -58,7 +59,7 @@ const NewDesignationsCard = () => {
                   width: '10px',
                   height: '10px',
                   borderRadius: '50%',
-                  background: '#3e97ff', // consistent accent color
+                  background: '#3e97ff',
                   marginTop: '5px',
                   boxShadow: '0 0 0 3px #3e97ff20',
                 }}
