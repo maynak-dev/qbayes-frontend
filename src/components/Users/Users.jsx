@@ -112,14 +112,13 @@ const handleView = async (user) => {
 const handleStatusChange = async (user, newStatus) => {
   setUpdatingStatus(user.id);
   try {
-    // Send only the status update inside the nested profile
     const payload = {
       profile: {
         status: newStatus,
       },
     };
     await api.put(`/users/${user.id}/`, payload);
-    fetchUsers(); // refresh after status change
+    fetchUsers();
   } catch (err) {
     console.error('Failed to update status', err);
     setError('Failed to update status. Please try again.');
@@ -127,7 +126,6 @@ const handleStatusChange = async (user, newStatus) => {
     setUpdatingStatus(null);
   }
 };
-
 
   const getUserField = (user, field) => {
     if (user[field] !== undefined && user[field] !== null && user[field] !== '') return user[field];
