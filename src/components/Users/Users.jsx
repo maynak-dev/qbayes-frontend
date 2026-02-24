@@ -23,7 +23,7 @@ const Users = () => {
   const fetchUsers = useCallback(async () => {
     try {
       const response = await api.get('/users/', {
-        params: { _t: Date.now() } // prevent caching
+        params: { _t: Date.now() }
       });
       console.log('Fetched users:', response.data);
       const sorted = response.data.sort((a, b) => b.id - a.id);
@@ -43,7 +43,7 @@ const Users = () => {
     const matchesSearch =
       (user.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
       (user.email?.toLowerCase() || '').includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'All' || user.status === statusFilter;
+    const matchesStatus = statusFilter === 'All' || (user.profile?.status === statusFilter);
     return matchesSearch && matchesStatus;
   });
 
@@ -75,17 +75,16 @@ const Users = () => {
     setIsNewModalOpen(false);
   };
 
-const handleView = async (user) => {
-  try {
-    // Fetch full user details to ensure we have all profile fields
-    const response = await api.get(`/users/${user.id}/`);
-    setSelectedUser(response.data);
-    setIsViewModalOpen(true);
-  } catch (err) {
-    console.error('Failed to fetch user details', err);
-    setError('Failed to load user details.');
-  }
-};
+  const handleView = async (user) => {
+    try {
+      const response = await api.get(`/users/${user.id}/`);
+      setSelectedUser(response.data);
+      setIsViewModalOpen(true);
+    } catch (err) {
+      console.error('Failed to fetch user details', err);
+      setError('Failed to load user details.');
+    }
+  };
 
   const handleEdit = (user) => {
     setSelectedUser(user);
@@ -98,34 +97,34 @@ const handleView = async (user) => {
   };
 
   const handleUserUpdated = () => {
-    fetchUsers(); // refresh after update
+    fetchUsers();
     setIsEditModalOpen(false);
   };
 
   const handleUserDeleted = () => {
-    fetchUsers(); // refresh after delete
+    fetchUsers();
     setIsDeleteModalOpen(false);
   };
 
-
-const handleStatusChange = async (user, newStatus) => {
-  setUpdatingStatus(user.id);
-  try {
-    const payload = {
-      profile: {
-        status: newStatus,
-      },
-    };
-    await api.patch(`/users/${user.id}/`, payload);
-    fetchUsers();
-  } catch (err) {
-    console.error('Failed to update status', err);
-    console.error('Error response:', err.response?.data);
-    setError('Failed to update status. Please try again.');
-  } finally {
-    setUpdatingStatus(null);
-  }
-};
+  const handleStatusChange = async (user, newStatus) => {
+    setUpdatingStatus(user.id);
+    try {
+      const payload = {
+        profile: {
+          status: newStatus,
+        },
+      };
+      await api.patch(`/users/${user.id}/`, payload);
+      fetchUsers();
+    } catch (err) {
+      console.error('Failed to update status', err);
+      console.error('Error response:', err.response?.data);
+      const errorMsg = err.response?.data?.detail || JSON.stringify(err.response?.data) || 'Please try again.';
+      setError(`Status update failed: ${errorMsg}`);
+    } finally {
+      setUpdatingStatus(null);
+    }
+  };
 
   const getUserField = (user, field) => {
     if (user[field] !== undefined && user[field] !== null && user[field] !== '') return user[field];
@@ -266,7 +265,7 @@ const handleStatusChange = async (user, newStatus) => {
                             justifyContent: 'center',
                             fontSize: '1.2rem',
                             fontWeight: '600',
-                            color: getInitialsColor(user.status),
+                            color: getInitialsColor(user.profile?.status),
                           }}
                         >
                           {getInitials(user.name || user.username)}
@@ -285,7 +284,7 @@ const handleStatusChange = async (user, newStatus) => {
                       <td style={{ padding: '16px 12px' }}>
                         <select
                           className="form-control form-select-sm"
-                          value={user.status || 'Pending'}
+                          value={user.profile?.status || 'Pending'}
                           onChange={(e) => handleStatusChange(user, e.target.value)}
                           disabled={updatingStatus === user.id}
                           style={{
@@ -294,7 +293,7 @@ const handleStatusChange = async (user, newStatus) => {
                             border: '1px solid #e2e8f0',
                             backgroundColor: '#fff',
                             fontWeight: 500,
-                            color: user.status === 'Approved' ? '#1d874b' : user.status === 'Rejected' ? '#b42318' : '#b45b0e',
+                            color: user.profile?.status === 'Approved' ? '#1d874b' : user.profile?.status === 'Rejected' ? '#b42318' : '#b45b0e',
                           }}
                         >
                           <option value="Pending">Pending</option>
@@ -306,7 +305,7 @@ const handleStatusChange = async (user, newStatus) => {
                         )}
                       </td>
                       <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.9rem' }}>
-                        {user.role_details?.name || (user.role ? `(ID: ${user.role})` : 'Not assigned')}
+                        {user.role_details?.name || 'Not assigned'}
                       </td>
                       <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.9rem' }}>
                         {getUserField(user, 'company')}
