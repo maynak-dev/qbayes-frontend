@@ -107,7 +107,6 @@ const handleView = async (user) => {
     setIsDeleteModalOpen(false);
   };
 
-// ... (all imports and state remain the same)
 
 const handleStatusChange = async (user, newStatus) => {
   setUpdatingStatus(user.id);
@@ -121,6 +120,7 @@ const handleStatusChange = async (user, newStatus) => {
     fetchUsers();
   } catch (err) {
     console.error('Failed to update status', err);
+    console.error('Error response:', err.response?.data);
     setError('Failed to update status. Please try again.');
   } finally {
     setUpdatingStatus(null);
