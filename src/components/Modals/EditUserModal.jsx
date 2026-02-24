@@ -6,8 +6,8 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
   const [roles, setRoles] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [locations, setLocations] = useState([]);
+  const [shops, setShops] = useState([]);
   const [designations, setDesignations] = useState([]);
-  const [shops, setShops] = useState([]); // optional
 
   const [formData, setFormData] = useState({
     username: '',
@@ -22,27 +22,28 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     status: 'Pending',
     steps: 0,
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Fetch all dropdown options when modal opens
+  // UI states for cascading dropdowns
+  const [loadingLocations, setLoadingLocations] = useState(false);
+  const [loadingShops, setLoadingShops] = useState(false);
+
+  // Fetch all base options when modal opens
   useEffect(() => {
     if (!isOpen) return;
 
     const fetchOptions = async () => {
       try {
-        const [rolesRes, companiesRes, locationsRes, designationsRes, shopsRes] = await Promise.all([
+        const [rolesRes, companiesRes, designationsRes] = await Promise.all([
           api.get('/roles/'),
           api.get('/companies/'),
-          api.get('/locations/'),
           api.get('/designations/'),
-          api.get('/shops/').catch(() => []),
         ]);
         setRoles(rolesRes.data);
         setCompanies(companiesRes.data);
-        setLocations(locationsRes.data);
         setDesignations(designationsRes.data);
-        if (shopsRes?.data) setShops(shopsRes.data);
       } catch (err) {
         console.error('Failed to load options', err);
         setError('Failed to load form options. Please refresh.');
@@ -70,6 +71,56 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     }
   }, [user]);
 
+  // Fetch locations when company changes
+  useEffect(() => {
+    if (!formData.company) {
+      setLocations([]);
+      setFormData(prev => ({ ...prev, location: '', shop: '' }));
+      return;
+    }
+
+    const fetchLocations = async () => {
+      setLoadingLocations(true);
+      try {
+        // Need to find company ID from name (since dropdown value is name)
+        const selectedCompany = companies.find(c => c.name === formData.company);
+        if (!selectedCompany) return;
+        const res = await api.get(`/locations/?company=${selectedCompany.id}`);
+        setLocations(res.data);
+      } catch (err) {
+        console.error('Failed to load locations', err);
+      } finally {
+        setLoadingLocations(false);
+      }
+    };
+    fetchLocations();
+  }, [formData.company, companies]);
+
+  // Fetch shops when location changes
+  useEffect(() => {
+    if (!formData.location) {
+      setShops([]);
+      setFormData(prev => ({ ...prev, shop: '' }));
+      return;
+    }
+
+    const fetchShops = async () => {
+      setLoadingShops(true);
+      try {
+        // Find location ID from name
+        const selectedLocation = locations.find(l => l.name === formData.location);
+        if (!selectedLocation) return;
+        const res = await api.get(`/shops/?location=${selectedLocation.id}`);
+        setShops(res.data);
+      } catch (err) {
+        console.error('Failed to load shops', err);
+      } finally {
+        setLoadingShops(false);
+      }
+    };
+    fetchShops();
+  }, [formData.location, locations]);
+
   const statuses = ['Pending', 'Approved', 'Rejected'];
 
   const handleChange = (e) => {
@@ -85,7 +136,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     const payload = {
       ...formData,
       first_name: formData.name,
-      created_at: user.created_at, // include original created_at if required
+      created_at: user.created_at,
     };
 
     try {
@@ -217,7 +268,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
             </select>
           </div>
 
-          {/* Location Dropdown */}
+          {/* Location Dropdown - depends on selected company */}
           <div className="input-group">
             <label htmlFor="location">Location *</label>
             <select
@@ -227,10 +278,41 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
               value={formData.location}
               onChange={handleChange}
               required
+              disabled={!formData.company || loadingLocations}
             >
-              <option value="">Select location</option>
+              <option value="">
+                {!formData.company
+                  ? 'Select a company first'
+                  : loadingLocations
+                  ? 'Loading locations...'
+                  : 'Select location'}
+              </option>
               {locations.map((loc) => (
                 <option key={loc.id} value={loc.name}>{loc.name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Shop Dropdown - depends on selected location */}
+          <div className="input-group">
+            <label htmlFor="shop">Shop</label>
+            <select
+              id="shop"
+              name="shop"
+              className="login-input"
+              value={formData.shop}
+              onChange={handleChange}
+              disabled={!formData.location || loadingShops}
+            >
+              <option value="">
+                {!formData.location
+                  ? 'Select a location first'
+                  : loadingShops
+                  ? 'Loading shops...'
+                  : 'Select shop (optional)'}
+              </option>
+              {shops.map((shop) => (
+                <option key={shop.id} value={shop.name}>{shop.name}</option>
               ))}
             </select>
           </div>
@@ -252,25 +334,6 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
               ))}
             </select>
           </div>
-
-          {/* Shop Dropdown (optional) */}
-          {shops.length > 0 && (
-            <div className="input-group">
-              <label htmlFor="shop">Shop</label>
-              <select
-                id="shop"
-                name="shop"
-                className="login-input"
-                value={formData.shop}
-                onChange={handleChange}
-              >
-                <option value="">Select shop (optional)</option>
-                {shops.map((shop) => (
-                  <option key={shop.id} value={shop.name}>{shop.name}</option>
-                ))}
-              </select>
-            </div>
-          )}
 
           {/* Status Dropdown */}
           <div className="input-group">

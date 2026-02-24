@@ -6,8 +6,8 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
   const [roles, setRoles] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [locations, setLocations] = useState([]);
+  const [shops, setShops] = useState([]);
   const [designations, setDesignations] = useState([]);
-  const [shops, setShops] = useState([]); // optional
 
   const [formData, setFormData] = useState({
     username: '',
@@ -18,29 +18,30 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
     company: '',
     location: '',
     designation: '',
-    shop: '', // optional
+    shop: '',
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Fetch all dropdown options when modal opens
+  // UI states for cascading dropdowns
+  const [loadingLocations, setLoadingLocations] = useState(false);
+  const [loadingShops, setLoadingShops] = useState(false);
+
+  // Fetch all base options when modal opens
   useEffect(() => {
     if (!isOpen) return;
 
     const fetchOptions = async () => {
       try {
-        const [rolesRes, companiesRes, locationsRes, designationsRes, shopsRes] = await Promise.all([
+        const [rolesRes, companiesRes, designationsRes] = await Promise.all([
           api.get('/roles/'),
           api.get('/companies/'),
-          api.get('/locations/'),
           api.get('/designations/'),
-          api.get('/shops/').catch(() => []), // ignore if endpoint doesn't exist
         ]);
         setRoles(rolesRes.data);
         setCompanies(companiesRes.data);
-        setLocations(locationsRes.data);
         setDesignations(designationsRes.data);
-        if (shopsRes?.data) setShops(shopsRes.data);
       } catch (err) {
         console.error('Failed to load options', err);
         setError('Failed to load form options. Please refresh.');
@@ -48,6 +49,50 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
     };
     fetchOptions();
   }, [isOpen]);
+
+  // Fetch locations when company changes
+  useEffect(() => {
+    if (!formData.company) {
+      setLocations([]);
+      setFormData(prev => ({ ...prev, location: '', shop: '' }));
+      return;
+    }
+
+    const fetchLocations = async () => {
+      setLoadingLocations(true);
+      try {
+        const res = await api.get(`/locations/?company=${formData.company}`);
+        setLocations(res.data);
+      } catch (err) {
+        console.error('Failed to load locations', err);
+      } finally {
+        setLoadingLocations(false);
+      }
+    };
+    fetchLocations();
+  }, [formData.company]);
+
+  // Fetch shops when location changes
+  useEffect(() => {
+    if (!formData.location) {
+      setShops([]);
+      setFormData(prev => ({ ...prev, shop: '' }));
+      return;
+    }
+
+    const fetchShops = async () => {
+      setLoadingShops(true);
+      try {
+        const res = await api.get(`/shops/?location=${formData.location}`);
+        setShops(res.data);
+      } catch (err) {
+        console.error('Failed to load shops', err);
+      } finally {
+        setLoadingShops(false);
+      }
+    };
+    fetchShops();
+  }, [formData.location]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -90,7 +135,7 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
       company: formData.company,
       location: formData.location,
       designation: formData.designation,
-      shop: formData.shop, // optional
+      shop: formData.shop,
     };
 
     console.log('Sending payload:', payload);
@@ -239,7 +284,7 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
             </select>
           </div>
 
-          {/* Location Dropdown */}
+          {/* Location Dropdown - depends on selected company */}
           <div className="input-group">
             <label htmlFor="location">Location *</label>
             <select
@@ -249,15 +294,46 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
               value={formData.location}
               onChange={handleChange}
               required
+              disabled={!formData.company || loadingLocations}
             >
-              <option value="">Select location</option>
+              <option value="">
+                {!formData.company
+                  ? 'Select a company first'
+                  : loadingLocations
+                  ? 'Loading locations...'
+                  : 'Select location'}
+              </option>
               {locations.map((loc) => (
                 <option key={loc.id} value={loc.name}>{loc.name}</option>
               ))}
             </select>
           </div>
 
-          {/* Designation Dropdown (from Designation model) */}
+          {/* Shop Dropdown - depends on selected location */}
+          <div className="input-group">
+            <label htmlFor="shop">Shop</label>
+            <select
+              id="shop"
+              name="shop"
+              className="login-input"
+              value={formData.shop}
+              onChange={handleChange}
+              disabled={!formData.location || loadingShops}
+            >
+              <option value="">
+                {!formData.location
+                  ? 'Select a location first'
+                  : loadingShops
+                  ? 'Loading shops...'
+                  : 'Select shop (optional)'}
+              </option>
+              {shops.map((shop) => (
+                <option key={shop.id} value={shop.name}>{shop.name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Designation Dropdown */}
           <div className="input-group">
             <label htmlFor="designation">Designation *</label>
             <select
@@ -274,25 +350,6 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
               ))}
             </select>
           </div>
-
-          {/* Shop Dropdown (optional) */}
-          {shops.length > 0 && (
-            <div className="input-group">
-              <label htmlFor="shop">Shop</label>
-              <select
-                id="shop"
-                name="shop"
-                className="login-input"
-                value={formData.shop}
-                onChange={handleChange}
-              >
-                <option value="">Select shop (optional)</option>
-                {shops.map((shop) => (
-                  <option key={shop.id} value={shop.name}>{shop.name}</option>
-                ))}
-              </select>
-            </div>
-          )}
 
           <div className="modal-actions">
             <button type="button" className="btn btn-light" onClick={onClose} disabled={loading}>
