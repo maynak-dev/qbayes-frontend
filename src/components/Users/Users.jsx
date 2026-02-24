@@ -117,7 +117,7 @@ const handleStatusChange = async (user, newStatus) => {
         status: newStatus,
       },
     };
-    await api.put(`/users/${user.id}/`, payload);
+    await api.patch(`/users/${user.id}/`, payload);
     fetchUsers();
   } catch (err) {
     console.error('Failed to update status', err);
