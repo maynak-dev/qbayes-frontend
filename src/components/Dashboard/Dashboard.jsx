@@ -4,7 +4,7 @@ import NewUserCard from './NewUserCard';
 import SalesDistributionCard from './SalesDistributionCard';
 import ProjectProgressCard from './ProjectProgressCard';
 import ActiveAuthorsCard from './ActiveAuthorsCard';
-import NewDesignationsCard from './NewDesignationsCard';
+import NewRolesCard from './NewDesignationsCard';
 import UserActivityCard from './UserActivityCard';
 
 const Dashboard = () => {
@@ -17,7 +17,7 @@ const Dashboard = () => {
         <SalesDistributionCard />
         <ProjectProgressCard />
         <ActiveAuthorsCard />
-        <NewDesignationsCard />
+        <NewRolesCard />
         <UserActivityCard />
       </div>
     </div>

@@ -1,24 +1,31 @@
 import { useState, useEffect } from 'react';
 import api from '../../api';
+import { useNavigate } from 'react-router-dom';
 
-const NewDesignationsCard = () => {
-  const [designations, setDesignations] = useState([]);
+const NewRolesCard = () => {
+  const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchDesignations = async () => {
+    const fetchRoles = async () => {
       try {
-        const response = await api.get('/dashboard/new-designations/');
-        setDesignations(response.data);
+        // Get the 4 most recent roles (assuming the backend orders by -created_at)
+        const response = await api.get('/roles/?ordering=-created_at&limit=4');
+        setRoles(response.data);
       } catch (err) {
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-    fetchDesignations();
+    fetchRoles();
   }, []);
+
+  const handleViewAll = () => {
+    navigate('/admin/roles');
+  };
 
   if (loading) return <div className="admin-card">Loading...</div>;
   if (error) return <div className="admin-card">Error: {error}</div>;
@@ -26,12 +33,14 @@ const NewDesignationsCard = () => {
   return (
     <div className="admin-card col-span-1">
       <div className="d-flex space-between align-center mb-4">
-        <h3 className="card-title">New Designations</h3>
-        <button className="btn btn-sm btn-light">View All</button>
+        <h3 className="card-title">New Roles</h3>
+        <button className="btn btn-sm btn-light" onClick={handleViewAll}>
+          View All
+        </button>
       </div>
       <div className="timeline-block pb-2">
-        {designations.map((item, index) => (
-          <div key={index} className="d-flex mb-3">
+        {roles.map((role, index) => (
+          <div key={role.id} className="d-flex mb-3">
             <div
               style={{
                 width: '20px',
@@ -46,12 +55,12 @@ const NewDesignationsCard = () => {
                   width: '10px',
                   height: '10px',
                   borderRadius: '50%',
-                  background: item.color,
+                  background: '#3e97ff', // consistent color or you could use role-specific colors
                   marginTop: '5px',
-                  boxShadow: `0 0 0 3px ${item.color}20`,
+                  boxShadow: `0 0 0 3px #3e97ff20`,
                 }}
               ></div>
-              {index < designations.length - 1 && (
+              {index < roles.length - 1 && (
                 <div
                   style={{
                     width: '2px',
@@ -65,11 +74,15 @@ const NewDesignationsCard = () => {
             <div className="flex-grow-1">
               <div className="d-flex space-between align-center">
                 <span className="fw-bold text-dark" style={{ fontSize: '0.95rem' }}>
-                  {item.title}
+                  {role.name}
                 </span>
-                <span className="text-muted small">{item.date}</span>
+                <span className="text-muted small">
+                  {new Date(role.created_at).toLocaleDateString()}
+                </span>
               </div>
-              <div className="text-muted small mt-1">{item.company}</div>
+              <div className="text-muted small mt-1">
+                {role.company_name || 'No company'}
+              </div>
             </div>
           </div>
         ))}
@@ -78,4 +91,4 @@ const NewDesignationsCard = () => {
   );
 };
 
-export default NewDesignationsCard;
+export default NewRolesCard;
