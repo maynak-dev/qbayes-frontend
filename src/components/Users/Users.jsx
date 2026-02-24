@@ -18,15 +18,12 @@ const Users = () => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
   const [updatingStatus, setUpdatingStatus] = useState(null);
 
   const fetchUsers = async () => {
     try {
       const response = await api.get('/users/');
-      if (response.data.length > 0) {
-        console.log('First user from API:', response.data[0]);
-      }
+      // Sort by newest first (id descending)
       const sorted = response.data.sort((a, b) => b.id - a.id);
       setUsers(sorted);
     } catch (err) {
@@ -149,7 +146,55 @@ const Users = () => {
     return '#ffc700';
   };
 
-  if (loading) return <div className="admin-card">Loading users...</div>;
+  // Loading skeleton
+  if (loading) {
+    return (
+      <div className="fade-in">
+        <div className="d-flex flex-wrap gap-3 align-center justify-content-between mb-4">
+          <div>
+            <div className="skeleton h-8 w-48 mb-2"></div>
+            <div className="skeleton h-4 w-64"></div>
+          </div>
+          <div className="d-flex gap-2">
+            <div className="skeleton h-10 w-10 rounded"></div>
+            <div className="skeleton h-10 w-32 rounded"></div>
+          </div>
+        </div>
+        <div className="admin-card p-4">
+          <div className="d-flex gap-3 mb-4">
+            <div className="skeleton h-12 w-64 rounded-full"></div>
+            <div className="skeleton h-12 w-32 rounded-full"></div>
+          </div>
+          <div className="table-responsive">
+            <table className="table">
+              <thead>
+                <tr>
+                  {['Profile', 'Name', 'Status', 'Role', 'Company', 'Location', 'Shop', 'Actions'].map((h) => (
+                    <th key={h}><div className="skeleton h-4 w-20"></div></th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {[...Array(5)].map((_, i) => (
+                  <tr key={i}>
+                    <td><div className="skeleton w-12 h-12 rounded-full"></div></td>
+                    <td><div className="skeleton h-4 w-32 mb-2"></div><div className="skeleton h-3 w-24"></div></td>
+                    <td><div className="skeleton h-8 w-24 rounded-full"></div></td>
+                    <td><div className="skeleton h-4 w-16"></div></td>
+                    <td><div className="skeleton h-4 w-20"></div></td>
+                    <td><div className="skeleton h-4 w-20"></div></td>
+                    <td><div className="skeleton h-4 w-16"></div></td>
+                    <td><div className="d-flex gap-2"><div className="skeleton w-8 h-8 rounded"></div><div className="skeleton w-8 h-8 rounded"></div><div className="skeleton w-8 h-8 rounded"></div></div></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (error) return <div className="admin-card">Error: {error}</div>;
 
   return (
@@ -223,7 +268,7 @@ const Users = () => {
         {/* Table Card */}
         <div className="admin-card" style={{ padding: 0, overflow: 'hidden', marginTop: '20px' }}>
           <div className="table-responsive" style={{ overflowX: 'auto' }}>
-            <table className="table" style={{ minWidth: '1000px', width: '100%', borderCollapse: 'separate', borderSpacing: '0 8px' }}>
+            <table className="table" style={{ minWidth: '1200px', width: '100%', borderCollapse: 'separate', borderSpacing: '0 8px' }}>
               <thead style={{ background: '#f9fafc' }}>
                 <tr>
                   <th style={{ padding: '16px 20px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Profile</th>
@@ -294,7 +339,7 @@ const Users = () => {
                         )}
                       </td>
                       <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.9rem' }}>
-                        {user.role_details?.name || (user.role ? `(ID: ${user.role})` : '-')}
+                        {user.role_details?.name || (user.role ? `(ID: ${user.role})` : 'Not assigned')}
                       </td>
                       <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.9rem' }}>
                         {getUserField(user, 'company')}
