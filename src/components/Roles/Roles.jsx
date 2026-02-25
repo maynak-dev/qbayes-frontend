@@ -413,7 +413,7 @@ const Roles = () => {
         {/* Pagination */}
         <div className="d-flex flex-wrap gap-3 align-center justify-content-between" style={{ padding: '20px 24px', borderTop: '1px solid #eff2f5' }}>
           <div className="text-muted" style={{ fontSize: '0.85rem' }}>
-            Showing {paginatedUsers.length} of {totalRoles} entries
+            Showing {paginatedRoles.length} of {totalRoles} entries
           </div>
           <div className="d-flex gap-2">
             <button
