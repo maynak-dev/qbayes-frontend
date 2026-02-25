@@ -61,10 +61,8 @@ const Roles = () => {
       setFormData(prev => ({ ...prev, location: '', shop: '' }));
       return;
     }
-
     const selectedCompany = companies.find(c => c.id === parseInt(formData.company));
     if (!selectedCompany) return;
-
     const fetchLocations = async () => {
       setLoadingLocations(true);
       try {
@@ -89,10 +87,8 @@ const Roles = () => {
       setFormData(prev => ({ ...prev, shop: '' }));
       return;
     }
-
     const selectedLocation = locations.find(l => l.id === parseInt(formData.location));
     if (!selectedLocation) return;
-
     const fetchShops = async () => {
       setLoadingShops(true);
       try {
@@ -119,7 +115,6 @@ const Roles = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
-
     const payload = {
       name: formData.name,
       company: parseInt(formData.company),
@@ -134,7 +129,6 @@ const Roles = () => {
       user_delete: formData.user_delete,
       user_view: formData.user_view,
     };
-
     try {
       if (editingId) {
         await api.put(`/user-roles/${editingId}/`, payload);
@@ -167,8 +161,6 @@ const Roles = () => {
       user_delete: role.user_delete,
       user_view: role.user_view,
     });
-
-    // Fetch locations for the selected company
     if (role.company) {
       try {
         const res = await api.get(`/locations/?company=${role.company}`);
@@ -176,8 +168,6 @@ const Roles = () => {
       } catch (err) {
         console.error('Failed to load locations', err);
       }
-
-      // Fetch shops for the selected location
       if (role.location) {
         try {
           const res = await api.get(`/shops/?location=${role.location}`);
@@ -200,7 +190,9 @@ const Roles = () => {
     }
   };
 
+  // This function opens the modal – no alert
   const handleView = (role) => {
+    console.log('Opening view modal for role:', role);
     setSelectedRole(role);
     setViewModalOpen(true);
   };
@@ -415,7 +407,7 @@ const Roles = () => {
                     <td>{role.shop_name}</td>
                     <td>
                       <div className="d-flex gap-2">
-                        {/* View button (eye) */}
+                        {/* Eye button – opens modal */}
                         <button
                           className="btn btn-icon btn-light btn-sm"
                           onClick={() => handleView(role)}
@@ -425,7 +417,7 @@ const Roles = () => {
                             <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path>
                           </svg>
                         </button>
-                        {/* Edit button (pencil) */}
+                        {/* Edit button */}
                         <button
                           className="btn btn-icon btn-light btn-sm"
                           onClick={() => handleEdit(role)}
@@ -435,7 +427,7 @@ const Roles = () => {
                             <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
                           </svg>
                         </button>
-                        {/* Delete button (bin) */}
+                        {/* Delete button */}
                         <button
                           className="btn btn-icon btn-light btn-sm"
                           onClick={() => handleDelete(role.id)}
