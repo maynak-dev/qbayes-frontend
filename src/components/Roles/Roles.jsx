@@ -150,6 +150,7 @@ const Roles = () => {
   };
 
   const handleEdit = async (role) => {
+    console.log('Editing role:', role);
     setEditingId(role.id);
     setFormData({
       name: role.name,
@@ -168,26 +169,22 @@ const Roles = () => {
 
     // Fetch locations for the selected company
     if (role.company) {
-      setLoadingLocations(true);
       try {
         const res = await api.get(`/locations/?company=${role.company}`);
         setLocations(res.data);
+        console.log('Locations fetched:', res.data);
       } catch (err) {
         console.error('Failed to load locations', err);
-      } finally {
-        setLoadingLocations(false);
       }
 
       // Fetch shops for the selected location
       if (role.location) {
-        setLoadingShops(true);
         try {
           const res = await api.get(`/shops/?location=${role.location}`);
           setShops(res.data);
+          console.log('Shops fetched:', res.data);
         } catch (err) {
           console.error('Failed to load shops', err);
-        } finally {
-          setLoadingShops(false);
         }
       }
     }
