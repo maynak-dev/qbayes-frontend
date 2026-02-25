@@ -345,7 +345,7 @@ const Roles = () => {
                 <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                   Users Count
                 </th>
-                <th style={{ padding: '16px 20px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center' }}>
+                <th style={{ padding: '16px 20px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'left' }}>
                   Actions
                 </th>
               </tr>
@@ -362,8 +362,8 @@ const Roles = () => {
                         {role.users_count || 0} users
                       </span>
                     </td>
-                    <td style={{ padding: '16px 20px', textAlign: 'center' }}>
-                      <div className="d-flex gap-2 justify-content-center">
+                    <td style={{ padding: '16px 20px' }}>
+                      <div className="d-flex gap-2">
                         {/* View button */}
                         <button
                           className="btn btn-icon btn-light btn-sm"
