@@ -149,7 +149,7 @@ const Roles = () => {
     }
   };
 
-  const handleEdit = (role) => {
+  const handleEdit = async (role) => {
     setEditingId(role.id);
     setFormData({
       name: role.name,
@@ -165,6 +165,32 @@ const Roles = () => {
       user_delete: role.user_delete,
       user_view: role.user_view,
     });
+
+    // Fetch locations for the selected company
+    if (role.company) {
+      setLoadingLocations(true);
+      try {
+        const res = await api.get(`/locations/?company=${role.company}`);
+        setLocations(res.data);
+      } catch (err) {
+        console.error('Failed to load locations', err);
+      } finally {
+        setLoadingLocations(false);
+      }
+
+      // Fetch shops for the selected location
+      if (role.location) {
+        setLoadingShops(true);
+        try {
+          const res = await api.get(`/shops/?location=${role.location}`);
+          setShops(res.data);
+        } catch (err) {
+          console.error('Failed to load shops', err);
+        } finally {
+          setLoadingShops(false);
+        }
+      }
+    }
   };
 
   const handleDelete = async (id) => {
@@ -242,6 +268,7 @@ const Roles = () => {
                 value={formData.name}
                 onChange={handleChange}
                 required
+                placeholder="Enter role name"
               />
             </div>
 
@@ -277,7 +304,7 @@ const Roles = () => {
                   {!formData.company
                     ? 'Select a company first'
                     : loadingLocations
-                    ? 'Loading...'
+                    ? 'Loading locations...'
                     : 'Select location'}
                 </option>
                 {locations.map(l => (
@@ -301,7 +328,7 @@ const Roles = () => {
                   {!formData.location
                     ? 'Select a location first'
                     : loadingShops
-                    ? 'Loading...'
+                    ? 'Loading shops...'
                     : 'Select shop'}
                 </option>
                 {shops.map(s => (
