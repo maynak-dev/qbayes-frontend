@@ -4,7 +4,7 @@ import Dashboard from './components/Dashboard/Dashboard';
 import Login from './components/Login/Login';
 import Users from './components/Users/Users'; 
 import CompanyCreation from './components/CompanyCreation/CompanyCreation';
-import Designations from './components/Designations/Designations';
+import Roles from './components/Roles/Roles'; 
 // Simple auth check – replace with real token validation if needed
 const isAuthenticated = () => {
   return localStorage.getItem('access') !== null;
@@ -42,9 +42,6 @@ function App() {
             </PrivateRoute>
           }
         />
-
-        {/* Redirect root to dashboard */}
-        <Route path="/" element={<Navigate to="/admin" />} />
         <Route
           path="/admin/company-creation"
           element={
@@ -60,11 +57,14 @@ function App() {
           element={
             <PrivateRoute>
               <Layout>
-                <Designations />
+                <Roles /> 
               </Layout>
             </PrivateRoute>
           }
         />
+
+        {/* Redirect root to dashboard */}
+        <Route path="/" element={<Navigate to="/admin" />} />
       </Routes>
     </BrowserRouter>
   );
