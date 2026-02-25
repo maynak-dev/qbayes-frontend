@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../api';
+import ViewRoleModal from '../Modals/ViewRoleModal';
 
 const Roles = () => {
   const [roles, setRoles] = useState([]);
@@ -26,6 +27,8 @@ const Roles = () => {
   const [loadingLocations, setLoadingLocations] = useState(false);
   const [loadingShops, setLoadingShops] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [selectedRole, setSelectedRole] = useState(null);
 
   useEffect(() => {
     Promise.all([fetchRoles(), fetchCompanies()]).finally(() => setInitialLoad(false));
@@ -67,7 +70,6 @@ const Roles = () => {
       try {
         const res = await api.get(`/locations/?company=${selectedCompany.id}`);
         setLocations(res.data);
-        // If the current location is not in the new list, reset it
         if (res.data.length > 0 && !res.data.some(loc => loc.id === parseInt(formData.location))) {
           setFormData(prev => ({ ...prev, location: '', shop: '' }));
         }
@@ -150,7 +152,6 @@ const Roles = () => {
   };
 
   const handleEdit = async (role) => {
-    console.log('Editing role:', role);
     setEditingId(role.id);
     setFormData({
       name: role.name,
@@ -172,7 +173,6 @@ const Roles = () => {
       try {
         const res = await api.get(`/locations/?company=${role.company}`);
         setLocations(res.data);
-        console.log('Locations fetched:', res.data);
       } catch (err) {
         console.error('Failed to load locations', err);
       }
@@ -182,7 +182,6 @@ const Roles = () => {
         try {
           const res = await api.get(`/shops/?location=${role.location}`);
           setShops(res.data);
-          console.log('Shops fetched:', res.data);
         } catch (err) {
           console.error('Failed to load shops', err);
         }
@@ -199,6 +198,11 @@ const Roles = () => {
       console.error(err);
       setError('Failed to delete role');
     }
+  };
+
+  const handleView = (role) => {
+    setSelectedRole(role);
+    setViewModalOpen(true);
   };
 
   const resetForm = () => {
@@ -411,6 +415,17 @@ const Roles = () => {
                     <td>{role.shop_name}</td>
                     <td>
                       <div className="d-flex gap-2">
+                        {/* View button (eye) */}
+                        <button
+                          className="btn btn-icon btn-light btn-sm"
+                          onClick={() => handleView(role)}
+                          title="View"
+                        >
+                          <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
+                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path>
+                          </svg>
+                        </button>
+                        {/* Edit button (pencil) */}
                         <button
                           className="btn btn-icon btn-light btn-sm"
                           onClick={() => handleEdit(role)}
@@ -420,6 +435,7 @@ const Roles = () => {
                             <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
                           </svg>
                         </button>
+                        {/* Delete button (bin) */}
                         <button
                           className="btn btn-icon btn-light btn-sm"
                           onClick={() => handleDelete(role.id)}
@@ -438,6 +454,13 @@ const Roles = () => {
           </div>
         </div>
       </div>
+
+      {/* View Role Modal */}
+      <ViewRoleModal
+        isOpen={viewModalOpen}
+        onClose={() => setViewModalOpen(false)}
+        role={selectedRole}
+      />
     </div>
   );
 };
