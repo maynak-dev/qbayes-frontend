@@ -26,6 +26,9 @@ const Roles = () => {
   const [loadingLocations, setLoadingLocations] = useState(false);
   const [loadingShops, setLoadingShops] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage] = useState(10);
 
   // Modal states
   const [formModalOpen, setFormModalOpen] = useState(false);
@@ -260,15 +263,33 @@ const Roles = () => {
     return new Date(dateString).toLocaleDateString();
   };
 
+  // Filter roles based on search term
+  const filteredRoles = roles.filter(role =>
+    role.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const totalRoles = filteredRoles.length;
+  const totalPages = Math.ceil(totalRoles / rowsPerPage);
+  const paginatedRoles = filteredRoles.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
   if (initialLoad) {
     return (
       <div className="fade-in">
         <div className="skeleton h-8 w-48 mb-4"></div>
+        <div className="skeleton h-4 w-64 mb-4"></div>
+        <div className="skeleton h-10 w-full mb-4"></div>
         <div className="admin-card">
-          <div className="skeleton h-6 w-32 mb-4"></div>
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="skeleton h-10 w-full mb-3"></div>
-          ))}
+          <div className="skeleton h-10 w-full mb-3"></div>
+          <div className="skeleton h-10 w-full mb-3"></div>
+          <div className="skeleton h-10 w-full mb-3"></div>
         </div>
       </div>
     );
@@ -276,10 +297,16 @@ const Roles = () => {
 
   return (
     <div className="fade-in">
-      <div className="d-flex align-center justify-content-between mb-4">
-        <h2 className="card-title" style={{ fontSize: '1.5rem' }}>
-          Role Management
-        </h2>
+      {/* Header with title, subtitle and create button */}
+      <div className="d-flex flex-wrap align-center justify-content-between mb-4">
+        <div>
+          <h2 className="card-title" style={{ fontSize: '1.5rem', marginBottom: '4px' }}>
+            Role Management
+          </h2>
+          <p className="text-muted" style={{ fontSize: '0.95rem' }}>
+            Define roles and permissions ({totalRoles} total)
+          </p>
+        </div>
         <button className="btn btn-primary btn-lg shadow-sm" onClick={openCreateModal}>
           <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1.2rem" width="1.2rem" style={{ marginRight: '8px' }}>
             <path d="M19 11h-6V5h-2v6H5v2h6v6h2v-6h6z"></path>
@@ -290,66 +317,125 @@ const Roles = () => {
 
       {error && <div className="modal-error mb-3">{error}</div>}
 
-      {/* Roles List Card */}
-      <div className="admin-card">
-        <h3 className="card-title mb-3">Existing Roles</h3>
+      {/* Search input */}
+      <div className="admin-card p-3 mb-4">
+        <div className="search-input-wrapper" style={{ maxWidth: '300px' }}>
+          <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" className="search-icon" height="1em" width="1em">
+            <path d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z"></path>
+          </svg>
+          <input
+            className="form-control search-input"
+            placeholder="Search role..."
+            type="text"
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+        </div>
+      </div>
+
+      {/* Roles Table Card */}
+      <div className="admin-card" style={{ padding: 0, overflow: 'hidden' }}>
         <div className="table-responsive">
-          <table className="table">
-            <thead>
+          <table className="table" style={{ minWidth: '600px' }}>
+            <thead style={{ background: '#f9fafc' }}>
               <tr>
-                <th>Name</th>
-                <th>Company</th>
-                <th>Location</th>
-                <th>Shop</th>
-                <th>Actions</th>
+                <th style={{ padding: '16px 20px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Role Name <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" style={{ marginLeft: '4px', verticalAlign: 'middle' }} height="14" width="14"><path d="M7 20h2V8h3L8 4 4 8h3zm13-4h-3V4h-2v12h-3l4 4z"></path></svg>
+                </th>
+                <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Users Count
+                </th>
+                <th style={{ padding: '16px 20px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center' }}>
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
-              {roles.map(role => (
-                <tr key={role.id}>
-                  <td>{role.name}</td>
-                  <td>{role.company_name}</td>
-                  <td>{role.location_name}</td>
-                  <td>{role.shop_name}</td>
-                  <td>
-                    <div className="d-flex gap-2">
-                      {/* View button */}
-                      <button
-                        className="btn btn-icon btn-light btn-sm"
-                        onClick={() => openViewModal(role)}
-                        title="View"
-                      >
-                        <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
-                          <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path>
-                        </svg>
-                      </button>
-                      {/* Edit button */}
-                      <button
-                        className="btn btn-icon btn-light btn-sm"
-                        onClick={() => openEditModal(role)}
-                        title="Edit"
-                      >
-                        <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
-                          <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
-                        </svg>
-                      </button>
-                      {/* Delete button */}
-                      <button
-                        className="btn btn-icon btn-light-danger btn-sm"
-                        onClick={() => openDeleteModal(role)}
-                        title="Delete"
-                        style={{ color: '#f1416c', background: '#ffe8ec' }}
-                      >
-                        <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
-                          <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path>
-                        </svg>
-                      </button>
-                    </div>
+              {paginatedRoles.length > 0 ? (
+                paginatedRoles.map(role => (
+                  <tr key={role.id} style={{ borderBottom: '1px solid #eff2f5' }}>
+                    <td style={{ padding: '16px 20px', fontSize: '0.95rem', fontWeight: 500, color: '#0f172a' }}>
+                      {role.name}
+                    </td>
+                    <td style={{ padding: '16px 12px' }}>
+                      <span className="badge badge-light" style={{ color: '#7e8299', fontSize: '0.85rem' }}>
+                        {role.users_count || 0} users
+                      </span>
+                    </td>
+                    <td style={{ padding: '16px 20px', textAlign: 'center' }}>
+                      <div className="d-flex gap-2 justify-content-center">
+                        {/* View button */}
+                        <button
+                          className="btn btn-icon btn-light btn-sm"
+                          onClick={() => openViewModal(role)}
+                          title="View"
+                        >
+                          <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
+                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path>
+                          </svg>
+                        </button>
+                        {/* Edit button */}
+                        <button
+                          className="btn btn-icon btn-light btn-sm"
+                          onClick={() => openEditModal(role)}
+                          title="Edit"
+                        >
+                          <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
+                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
+                          </svg>
+                        </button>
+                        {/* Delete button */}
+                        <button
+                          className="btn btn-icon btn-light-danger btn-sm"
+                          onClick={() => openDeleteModal(role)}
+                          title="Delete"
+                          style={{ color: '#f1416c', background: '#ffe8ec' }}
+                        >
+                          <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
+                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path>
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="3" className="text-center py-5 text-muted" style={{ fontSize: '1rem' }}>
+                    No roles found
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="d-flex flex-wrap gap-3 align-center justify-content-between" style={{ padding: '20px 24px', borderTop: '1px solid #eff2f5' }}>
+          <div className="text-muted" style={{ fontSize: '0.85rem' }}>
+            Showing {paginatedUsers.length} of {totalRoles} entries
+          </div>
+          <div className="d-flex gap-2">
+            <button
+              className="btn btn-sm btn-light"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(currentPage - 1)}
+              style={{ padding: '8px 16px', borderRadius: '30px' }}
+            >
+              Previous
+            </button>
+            <span className="btn btn-sm btn-primary" style={{ padding: '8px 16px', borderRadius: '30px', background: '#3e97ff', color: '#fff' }}>
+              {currentPage}
+            </span>
+            <button
+              className="btn btn-sm btn-light"
+              disabled={currentPage === totalPages || totalPages === 0}
+              onClick={() => setCurrentPage(currentPage + 1)}
+              style={{ padding: '8px 16px', borderRadius: '30px' }}
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
 
