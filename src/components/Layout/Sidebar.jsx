@@ -15,10 +15,9 @@ const UsersIcon = () => (
 
 const RoleIcon = () => (
   <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em">
-    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path>
+    <path d="M20 6h-3V4c0-1.103-.897-2-2-2H9c-1.103 0-2 .897-2 2v2H4c-1.103 0-2 .897-2 2v11c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V8c0-1.103-.897-2-2-2zm-5-2v2H9V4h6zM8 8h12v3H4V8h4zM4 19v-6h6v2h4v-2h6l.001 6H4z"></path>
   </svg>
 );
-
 const CompanyIcon = () => (
   <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em">
     <path d="M20 6h-3V4c0-1.103-.897-2-2-2H9c-1.103 0-2 .897-2 2v2H4c-1.103 0-2 .897-2 2v11c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V8c0-1.103-.897-2-2-2zm-5-2v2H9V4h6zM8 8h12v3H4V8h4zM4 19v-6h6v2h4v-2h6l.001 6H4z"></path>
@@ -29,7 +28,7 @@ const Sidebar = ({ open, onClose }) => {
   const menuItems = [
     { name: "User's Home", icon: DashboardIcon, path: '/' },
     { name: 'Dashboard', icon: DashboardIcon, path: '/admin' },
-    { name: 'Role Management', icon: RoleIcon, path: '/admin/roles' },
+    { name: 'Designation', icon: RoleIcon, path: '/admin/roles' },
     { name: 'Users', icon: UsersIcon, path: '/admin/users' },
     { name: 'Company Creation', icon: CompanyIcon, path: '/admin/company-creation' },
   ];
