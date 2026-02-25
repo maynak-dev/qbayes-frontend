@@ -142,7 +142,7 @@ const Roles = () => {
       } else {
         await api.post('/roles/', payload);
       }
-      fetchRoles(); // refetch to get updated list (new roles at top)
+      fetchRoles();
       resetForm();
       setFormModalOpen(false);
     } catch (err) {
@@ -280,8 +280,8 @@ const Roles = () => {
         <h2 className="card-title" style={{ fontSize: '1.5rem' }}>
           Role Management
         </h2>
-        <button className="btn btn-primary" onClick={openCreateModal}>
-          <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1.2rem" width="1.2rem" style={{ marginRight: '6px' }}>
+        <button className="btn btn-primary btn-lg shadow-sm" onClick={openCreateModal}>
+          <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1.2rem" width="1.2rem" style={{ marginRight: '8px' }}>
             <path d="M19 11h-6V5h-2v6H5v2h6v6h2v-6h6z"></path>
           </svg>
           Create Role
