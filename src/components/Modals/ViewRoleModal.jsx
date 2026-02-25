@@ -41,7 +41,7 @@ const ViewRoleModal = ({ isOpen, onClose, role }) => {
             </div>
             <div>
               <h3 style={{ margin: 0, fontSize: '1.2rem' }}>{role.name}</h3>
-              <p className="text-muted" style={{ margin: 0 }}>Role ID: {role.id}</p>
+              <p className="text-muted" style={{ margin: 0 }}>ID: {role.id}</p>
             </div>
           </div>
 
@@ -64,7 +64,7 @@ const ViewRoleModal = ({ isOpen, onClose, role }) => {
               <div className="fw-bold">{formatDate(role.created_at)}</div>
             </div>
             <div className="info-item">
-              <label className="text-muted small">Users Count</label>
+              <label className="text-muted small">Users with this role</label>
               <div className="fw-bold">{role.users_count || 0}</div>
             </div>
           </div>
