@@ -42,7 +42,9 @@ const Roles = () => {
   const fetchRoles = async () => {
     try {
       const res = await api.get('/roles/');
-      setRoles(res.data);
+      // Sort by id descending so new roles appear at the top
+      const sorted = res.data.sort((a, b) => b.id - a.id);
+      setRoles(sorted);
     } catch (err) {
       console.error(err);
       setError('Failed to load roles');
@@ -140,7 +142,7 @@ const Roles = () => {
       } else {
         await api.post('/roles/', payload);
       }
-      fetchRoles();
+      fetchRoles(); // refetch to get updated list (new roles at top)
       resetForm();
       setFormModalOpen(false);
     } catch (err) {
