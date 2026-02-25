@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import api from '../../api';
-import ViewRoleModal from '../Modals/ViewRoleModal';
-import DeleteRoleModal from '../Modals/DeleteRoleModal';
 
 const Roles = () => {
   const [roles, setRoles] = useState([]);
@@ -28,9 +26,15 @@ const Roles = () => {
   const [loadingLocations, setLoadingLocations] = useState(false);
   const [loadingShops, setLoadingShops] = useState(false);
   const [initialLoad, setInitialLoad] = useState(true);
+
+  // View modal state
   const [viewModalOpen, setViewModalOpen] = useState(false);
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState(null);
+
+  // Delete modal state
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [roleToDelete, setRoleToDelete] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     Promise.all([fetchRoles(), fetchCompanies()]).finally(() => setInitialLoad(false));
@@ -181,18 +185,30 @@ const Roles = () => {
     }
   };
 
-  const handleDeleteClick = (role) => {
-    setSelectedRole(role);
-    setDeleteModalOpen(true);
+  const handleDelete = async () => {
+    if (!roleToDelete) return;
+    setDeleteLoading(true);
+    try {
+      await api.delete(`/user-roles/${roleToDelete.id}/`);
+      fetchRoles();
+      setDeleteModalOpen(false);
+      setRoleToDelete(null);
+    } catch (err) {
+      console.error(err);
+      setError('Failed to delete role');
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
-  const handleViewClick = (role) => {
+  const openViewModal = (role) => {
     setSelectedRole(role);
     setViewModalOpen(true);
   };
 
-  const handleRoleDeleted = () => {
-    fetchRoles();
+  const openDeleteModal = (role) => {
+    setRoleToDelete(role);
+    setDeleteModalOpen(true);
   };
 
   const resetForm = () => {
@@ -213,6 +229,11 @@ const Roles = () => {
     });
     setLocations([]);
     setShops([]);
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleDateString();
   };
 
   if (initialLoad) {
@@ -405,17 +426,17 @@ const Roles = () => {
                     <td>{role.shop_name}</td>
                     <td>
                       <div className="d-flex gap-2">
-                        {/* View button (eye) */}
+                        {/* View button */}
                         <button
                           className="btn btn-icon btn-light btn-sm"
-                          onClick={() => handleViewClick(role)}
+                          onClick={() => openViewModal(role)}
                           title="View"
                         >
                           <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
                             <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path>
                           </svg>
                         </button>
-                        {/* Edit button (pencil) */}
+                        {/* Edit button */}
                         <button
                           className="btn btn-icon btn-light btn-sm"
                           onClick={() => handleEdit(role)}
@@ -425,10 +446,10 @@ const Roles = () => {
                             <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
                           </svg>
                         </button>
-                        {/* Delete button (bin) */}
+                        {/* Delete button */}
                         <button
                           className="btn btn-icon btn-light-danger btn-sm"
-                          onClick={() => handleDeleteClick(role)}
+                          onClick={() => openDeleteModal(role)}
                           title="Delete"
                           style={{ color: '#f1416c', background: '#ffe8ec' }}
                         >
@@ -447,19 +468,146 @@ const Roles = () => {
       </div>
 
       {/* View Role Modal */}
-      <ViewRoleModal
-        isOpen={viewModalOpen}
-        onClose={() => setViewModalOpen(false)}
-        role={selectedRole}
-      />
+      {viewModalOpen && selectedRole && (
+        <div className="modal-overlay" onClick={() => setViewModalOpen(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="modal-title">Role Details</h3>
+              <button className="modal-close-btn" onClick={() => setViewModalOpen(false)}>
+                <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="20" width="20">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+                </svg>
+              </button>
+            </div>
+            <div className="modal-form" style={{ padding: '24px' }}>
+              {/* Role Name Header */}
+              <div className="d-flex align-center mb-4">
+                <div
+                  style={{
+                    width: '60px',
+                    height: '60px',
+                    borderRadius: '12px',
+                    background: '#3e97ff20',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1.5rem',
+                    fontWeight: '600',
+                    color: '#3e97ff',
+                    marginRight: '15px',
+                  }}
+                >
+                  {selectedRole.name ? selectedRole.name.charAt(0).toUpperCase() : '?'}
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.2rem' }}>{selectedRole.name}</h3>
+                  <p className="text-muted" style={{ margin: 0 }}>ID: {selectedRole.id}</p>
+                </div>
+              </div>
+
+              {/* Details Grid */}
+              <div className="row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="info-item">
+                  <label className="text-muted small">Company</label>
+                  <div className="fw-bold">{selectedRole.company_name || '-'}</div>
+                </div>
+                <div className="info-item">
+                  <label className="text-muted small">Location</label>
+                  <div className="fw-bold">{selectedRole.location_name || '-'}</div>
+                </div>
+                <div className="info-item">
+                  <label className="text-muted small">Shop</label>
+                  <div className="fw-bold">{selectedRole.shop_name || '-'}</div>
+                </div>
+                <div className="info-item">
+                  <label className="text-muted small">Created</label>
+                  <div className="fw-bold">{formatDate(selectedRole.created_at)}</div>
+                </div>
+                <div className="info-item">
+                  <label className="text-muted small">Users with this role</label>
+                  <div className="fw-bold">{selectedRole.users_count || 0}</div>
+                </div>
+              </div>
+
+              {/* Permissions Section */}
+              <div className="permissions-section mt-4">
+                <h4 className="fw-bold mb-2">Role Management Permissions</h4>
+                <div className="d-flex flex-wrap gap-4">
+                  <span className={`badge ${selectedRole.role_create ? 'badge-success' : 'badge-light'}`}>
+                    Create
+                  </span>
+                  <span className={`badge ${selectedRole.role_edit ? 'badge-success' : 'badge-light'}`}>
+                    Edit
+                  </span>
+                  <span className={`badge ${selectedRole.role_delete ? 'badge-success' : 'badge-light'}`}>
+                    Delete
+                  </span>
+                  <span className={`badge ${selectedRole.role_view ? 'badge-success' : 'badge-light'}`}>
+                    View
+                  </span>
+                </div>
+
+                <h4 className="fw-bold mb-2 mt-3">User Management Permissions</h4>
+                <div className="d-flex flex-wrap gap-4">
+                  <span className={`badge ${selectedRole.user_create ? 'badge-success' : 'badge-light'}`}>
+                    Create
+                  </span>
+                  <span className={`badge ${selectedRole.user_edit ? 'badge-success' : 'badge-light'}`}>
+                    Edit
+                  </span>
+                  <span className={`badge ${selectedRole.user_delete ? 'badge-success' : 'badge-light'}`}>
+                    Delete
+                  </span>
+                  <span className={`badge ${selectedRole.user_view ? 'badge-success' : 'badge-light'}`}>
+                    View
+                  </span>
+                </div>
+              </div>
+
+              <div className="modal-actions" style={{ marginTop: '24px' }}>
+                <button type="button" className="btn btn-light" onClick={() => setViewModalOpen(false)}>
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Delete Role Modal */}
-      <DeleteRoleModal
-        isOpen={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
-        role={selectedRole}
-        onRoleDeleted={handleRoleDeleted}
-      />
+      {deleteModalOpen && roleToDelete && (
+        <div className="modal-overlay" onClick={() => setDeleteModalOpen(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '400px' }}>
+            <div className="modal-header">
+              <h3 className="modal-title">Confirm Delete</h3>
+              <button className="modal-close-btn" onClick={() => setDeleteModalOpen(false)}>
+                <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="20" width="20">
+                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+                </svg>
+              </button>
+            </div>
+            <div className="modal-form">
+              <p style={{ fontSize: '1rem', color: '#5e6278' }}>
+                Are you sure you want to delete the role <strong>“{roleToDelete.name}”</strong>? This action cannot be undone.
+              </p>
+              <div className="modal-actions">
+                <button type="button" className="btn btn-light" onClick={() => setDeleteModalOpen(false)} disabled={deleteLoading}>
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={handleDelete}
+                  disabled={deleteLoading}
+                  style={{ backgroundColor: '#f1416c', color: '#fff', border: 'none' }}
+                >
+                  {deleteLoading ? 'Deleting...' : 'Delete'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
