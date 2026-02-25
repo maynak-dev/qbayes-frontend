@@ -42,7 +42,7 @@ const Roles = () => {
 
   const fetchRoles = async () => {
     try {
-      const res = await api.get('/user-roles/');
+      const res = await api.get('/roles/');
       setRoles(res.data);
     } catch (err) {
       console.error(err);
@@ -137,9 +137,9 @@ const Roles = () => {
     };
     try {
       if (editingId) {
-        await api.put(`/user-roles/${editingId}/`, payload);
+        await api.put(`/roles/${editingId}/`, payload); // 👈 changed
       } else {
-        await api.post('/user-roles/', payload);
+        await api.post('/roles/', payload); // 👈 changed
       }
       fetchRoles();
       resetForm();
@@ -189,7 +189,7 @@ const Roles = () => {
     if (!roleToDelete) return;
     setDeleteLoading(true);
     try {
-      await api.delete(`/user-roles/${roleToDelete.id}/`);
+      await api.delete(`/roles/${roleToDelete.id}/`); // 👈 changed
       fetchRoles();
       setDeleteModalOpen(false);
       setRoleToDelete(null);
