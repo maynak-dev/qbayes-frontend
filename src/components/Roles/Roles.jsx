@@ -25,10 +25,10 @@ const Roles = () => {
   const [error, setError] = useState('');
   const [loadingLocations, setLoadingLocations] = useState(false);
   const [loadingShops, setLoadingShops] = useState(false);
+  const [initialLoad, setInitialLoad] = useState(true);
 
   useEffect(() => {
-    fetchRoles();
-    fetchCompanies();
+    Promise.all([fetchRoles(), fetchCompanies()]).finally(() => setInitialLoad(false));
   }, []);
 
   const fetchRoles = async () => {
@@ -67,7 +67,7 @@ const Roles = () => {
       try {
         const res = await api.get(`/locations/?company=${selectedCompany.id}`);
         setLocations(res.data);
-        // Reset location if current selection not in new list
+        // If the current location is not in the new list, reset it
         if (res.data.length > 0 && !res.data.some(loc => loc.id === parseInt(formData.location))) {
           setFormData(prev => ({ ...prev, location: '', shop: '' }));
         }
@@ -197,6 +197,28 @@ const Roles = () => {
     setLocations([]);
     setShops([]);
   };
+
+  if (initialLoad) {
+    return (
+      <div className="fade-in">
+        <div className="skeleton h-8 w-48 mb-4"></div>
+        <div className="dashboard-grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+          <div className="admin-card">
+            <div className="skeleton h-6 w-32 mb-4"></div>
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="skeleton h-10 w-full mb-3"></div>
+            ))}
+          </div>
+          <div className="admin-card">
+            <div className="skeleton h-6 w-32 mb-4"></div>
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="skeleton h-10 w-full mb-3"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fade-in">
@@ -332,7 +354,9 @@ const Roles = () => {
             </div>
 
             <div className="modal-actions">
-              <button type="button" className="btn btn-light" onClick={resetForm}>Cancel</button>
+              <button type="button" className="btn btn-light" onClick={resetForm}>
+                Cancel
+              </button>
               <button type="submit" className="btn btn-primary" disabled={loading}>
                 {loading ? 'Saving...' : (editingId ? 'Update' : 'Create')}
               </button>
@@ -363,12 +387,20 @@ const Roles = () => {
                     <td>{role.shop_name}</td>
                     <td>
                       <div className="d-flex gap-2">
-                        <button className="btn btn-icon btn-light btn-sm" onClick={() => handleEdit(role)} title="Edit">
+                        <button
+                          className="btn btn-icon btn-light btn-sm"
+                          onClick={() => handleEdit(role)}
+                          title="Edit"
+                        >
                           <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
                             <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
                           </svg>
                         </button>
-                        <button className="btn btn-icon btn-light btn-sm" onClick={() => handleDelete(role.id)} title="Delete">
+                        <button
+                          className="btn btn-icon btn-light btn-sm"
+                          onClick={() => handleDelete(role.id)}
+                          title="Delete"
+                        >
                           <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
                             <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path>
                           </svg>
