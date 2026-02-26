@@ -5,7 +5,7 @@ const RFID = () => {
   const [items, setItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
@@ -52,21 +52,20 @@ const RFID = () => {
     setCurrentPage(1);
   };
 
+  const handleRowsPerPageChange = (e) => {
+    setRowsPerPage(parseInt(e.target.value, 10));
+    setCurrentPage(1);
+  };
+
   const openCreate = () => {
     setEditingId(null);
-    setFormData({
-      tag: '',
-      status: 'active',
-    });
+    setFormData({ tag: '', status: 'active' });
     setModalOpen(true);
   };
 
   const openEdit = (item) => {
     setEditingId(item.id);
-    setFormData({
-      tag: item.tag,
-      status: item.status,
-    });
+    setFormData({ tag: item.tag, status: item.status });
     setModalOpen(true);
   };
 
@@ -81,12 +80,16 @@ const RFID = () => {
     setError('');
     try {
       if (editingId) {
-        await api.put(`/rfid/${editingId}/`, formData);
+        const response = await api.put(`/rfid/${editingId}/`, formData);
+        setItems(prev =>
+          prev.map(item => (item.id === editingId ? response.data : item))
+        );
+        setModalOpen(false);
       } else {
-        await api.post('/rfid/', formData);
+        const response = await api.post('/rfid/', formData);
+        setItems(prev => [response.data, ...prev]);
+        setModalOpen(false);
       }
-      fetchItems();
-      setModalOpen(false);
     } catch (err) {
       setError('Failed to save RFID tag');
     } finally {
@@ -104,7 +107,7 @@ const RFID = () => {
     setDeleteLoading(true);
     try {
       await api.delete(`/rfid/${itemToDelete.id}/`);
-      fetchItems();
+      setItems(prev => prev.filter(item => item.id !== itemToDelete.id));
       setDeleteModalOpen(false);
       setItemToDelete(null);
     } catch (err) {
@@ -171,7 +174,7 @@ const RFID = () => {
         </div>
       </div>
 
-      {/* Table Card */}
+      {/* Table */}
       <div className="admin-card" style={{ padding: 0, overflow: 'hidden' }}>
         <div className="table-responsive">
           <table className="table table-row-hover" style={{ minWidth: '800px' }}>
@@ -232,8 +235,21 @@ const RFID = () => {
 
         {/* Pagination */}
         <div className="d-flex flex-wrap gap-3 align-center justify-content-between" style={{ padding: '20px 24px', borderTop: '1px solid #eff2f5' }}>
-          <div className="text-muted" style={{ fontSize: '0.85rem' }}>
-            Showing {paginatedItems.length} of {totalItems} entries
+          <div className="d-flex align-center">
+            <span className="text-muted" style={{ marginRight: '12px' }}>Show</span>
+            <select
+              className="form-control form-select-sm"
+              style={{ width: '70px', padding: '6px 8px', borderRadius: '20px', borderColor: '#e2e8f0' }}
+              value={rowsPerPage}
+              onChange={handleRowsPerPageChange}
+            >
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
+            <span className="text-muted" style={{ marginLeft: '12px' }}>
+              of {totalItems} entries
+            </span>
           </div>
           <div className="d-flex gap-2">
             <button
@@ -272,7 +288,6 @@ const RFID = () => {
               </button>
             </div>
             <form onSubmit={handleSubmit} className="modal-form">
-              {/* Tag */}
               <div className="input-group">
                 <label>RFID Tag *</label>
                 <input
@@ -285,8 +300,6 @@ const RFID = () => {
                   placeholder="e.g. RFID-12345"
                 />
               </div>
-
-              {/* Status */}
               <div className="input-group">
                 <label>Status</label>
                 <select name="status" className="login-input" value={formData.status} onChange={handleChange}>
@@ -294,7 +307,6 @@ const RFID = () => {
                   <option value="inactive">Inactive</option>
                 </select>
               </div>
-
               <div className="modal-actions">
                 <button type="button" className="btn btn-light" onClick={() => setModalOpen(false)}>
                   Cancel

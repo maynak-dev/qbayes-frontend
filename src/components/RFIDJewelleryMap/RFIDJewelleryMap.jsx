@@ -7,7 +7,7 @@ const RFIDJewelleryMap = () => {
   const [rfidList, setRfidList] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
@@ -29,15 +29,17 @@ const RFIDJewelleryMap = () => {
       api.get('/rfid-jewellery-map/'),
       api.get('/jewellery/'),
       api.get('/rfid/')
-    ]).then(([mapsRes, jewRes, rfidRes]) => {
-      setMaps(mapsRes.data);
-      setJewelleryList(jewRes.data);
-      setRfidList(rfidRes.data);
-      setInitialLoad(false);
-    }).catch(err => {
-      setError('Failed to load data');
-      setInitialLoad(false);
-    });
+    ])
+      .then(([mapsRes, jewRes, rfidRes]) => {
+        setMaps(mapsRes.data);
+        setJewelleryList(jewRes.data);
+        setRfidList(rfidRes.data);
+        setInitialLoad(false);
+      })
+      .catch(() => {
+        setError('Failed to load data');
+        setInitialLoad(false);
+      });
   }, []);
 
   const filteredMaps = maps.filter(map =>
@@ -54,6 +56,11 @@ const RFIDJewelleryMap = () => {
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleRowsPerPageChange = (e) => {
+    setRowsPerPage(parseInt(e.target.value, 10));
     setCurrentPage(1);
   };
 
@@ -84,13 +91,14 @@ const RFIDJewelleryMap = () => {
     setError('');
     try {
       if (editingId) {
-        await api.put(`/rfid-jewellery-map/${editingId}/`, formData);
+        const response = await api.put(`/rfid-jewellery-map/${editingId}/`, formData);
+        setMaps(prev => prev.map(m => (m.id === editingId ? response.data : m)));
+        setModalOpen(false);
       } else {
-        await api.post('/rfid-jewellery-map/', formData);
+        const response = await api.post('/rfid-jewellery-map/', formData);
+        setMaps(prev => [response.data, ...prev]);
+        setModalOpen(false);
       }
-      const res = await api.get('/rfid-jewellery-map/');
-      setMaps(res.data);
-      setModalOpen(false);
     } catch (err) {
       setError('Failed to save mapping');
     } finally {
@@ -108,7 +116,7 @@ const RFIDJewelleryMap = () => {
     setDeleteLoading(true);
     try {
       await api.delete(`/rfid-jewellery-map/${mapToDelete.id}/`);
-      setMaps(maps.filter(m => m.id !== mapToDelete.id));
+      setMaps(prev => prev.filter(m => m.id !== mapToDelete.id));
       setDeleteModalOpen(false);
       setMapToDelete(null);
     } catch (err) {
@@ -175,7 +183,7 @@ const RFIDJewelleryMap = () => {
         </div>
       </div>
 
-      {/* Table Card */}
+      {/* Table */}
       <div className="admin-card" style={{ padding: 0, overflow: 'hidden' }}>
         <div className="table-responsive">
           <table className="table table-row-hover" style={{ minWidth: '800px' }}>
@@ -238,8 +246,21 @@ const RFIDJewelleryMap = () => {
 
         {/* Pagination */}
         <div className="d-flex flex-wrap gap-3 align-center justify-content-between" style={{ padding: '20px 24px', borderTop: '1px solid #eff2f5' }}>
-          <div className="text-muted" style={{ fontSize: '0.85rem' }}>
-            Showing {paginatedMaps.length} of {totalMaps} entries
+          <div className="d-flex align-center">
+            <span className="text-muted" style={{ marginRight: '12px' }}>Show</span>
+            <select
+              className="form-control form-select-sm"
+              style={{ width: '70px', padding: '6px 8px', borderRadius: '20px', borderColor: '#e2e8f0' }}
+              value={rowsPerPage}
+              onChange={handleRowsPerPageChange}
+            >
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
+            <span className="text-muted" style={{ marginLeft: '12px' }}>
+              of {totalMaps} entries
+            </span>
           </div>
           <div className="d-flex gap-2">
             <button

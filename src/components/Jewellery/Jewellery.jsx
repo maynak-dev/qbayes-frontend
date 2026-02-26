@@ -5,7 +5,7 @@ const Jewellery = () => {
   const [items, setItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
@@ -29,6 +29,7 @@ const Jewellery = () => {
   const fetchItems = async () => {
     try {
       const res = await api.get('/jewellery/');
+      // Assume backend returns newest first; we'll keep that order
       setItems(res.data);
     } catch (err) {
       setError('Failed to load jewellery');
@@ -55,6 +56,11 @@ const Jewellery = () => {
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleRowsPerPageChange = (e) => {
+    setRowsPerPage(parseInt(e.target.value, 10));
     setCurrentPage(1);
   };
 
@@ -97,12 +103,18 @@ const Jewellery = () => {
     setError('');
     try {
       if (editingId) {
-        await api.put(`/jewellery/${editingId}/`, formData);
+        // Update existing item
+        const response = await api.put(`/jewellery/${editingId}/`, formData);
+        setItems(prev =>
+          prev.map(item => (item.id === editingId ? response.data : item))
+        );
+        setModalOpen(false);
       } else {
-        await api.post('/jewellery/', formData);
+        // Create new item – add to the top of the list
+        const response = await api.post('/jewellery/', formData);
+        setItems(prev => [response.data, ...prev]);
+        setModalOpen(false);
       }
-      fetchItems();
-      setModalOpen(false);
     } catch (err) {
       setError('Failed to save jewellery');
     } finally {
@@ -120,7 +132,7 @@ const Jewellery = () => {
     setDeleteLoading(true);
     try {
       await api.delete(`/jewellery/${itemToDelete.id}/`);
-      fetchItems();
+      setItems(prev => prev.filter(item => item.id !== itemToDelete.id));
       setDeleteModalOpen(false);
       setItemToDelete(null);
     } catch (err) {
@@ -146,7 +158,7 @@ const Jewellery = () => {
 
   return (
     <div className="fade-in">
-      {/* Header with title and create button */}
+      {/* Header */}
       <div className="d-flex flex-wrap align-center justify-content-between mb-4">
         <div>
           <h2 className="card-title" style={{ fontSize: '1.5rem', marginBottom: '4px' }}>
@@ -166,7 +178,7 @@ const Jewellery = () => {
 
       {error && <div className="modal-error mb-3">{error}</div>}
 
-      {/* Search input */}
+      {/* Search */}
       <div className="admin-card p-3 mb-4">
         <div className="search-input-wrapper" style={{ maxWidth: '300px' }}>
           <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" className="search-icon" height="1em" width="1em">
@@ -182,7 +194,7 @@ const Jewellery = () => {
         </div>
       </div>
 
-      {/* Table Card */}
+      {/* Table */}
       <div className="admin-card" style={{ padding: 0, overflow: 'hidden' }}>
         <div className="table-responsive">
           <table className="table table-row-hover" style={{ minWidth: '1000px' }}>
@@ -251,8 +263,21 @@ const Jewellery = () => {
 
         {/* Pagination */}
         <div className="d-flex flex-wrap gap-3 align-center justify-content-between" style={{ padding: '20px 24px', borderTop: '1px solid #eff2f5' }}>
-          <div className="text-muted" style={{ fontSize: '0.85rem' }}>
-            Showing {paginatedItems.length} of {totalItems} entries
+          <div className="d-flex align-center">
+            <span className="text-muted" style={{ marginRight: '12px' }}>Show</span>
+            <select
+              className="form-control form-select-sm"
+              style={{ width: '70px', padding: '6px 8px', borderRadius: '20px', borderColor: '#e2e8f0' }}
+              value={rowsPerPage}
+              onChange={handleRowsPerPageChange}
+            >
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
+            <span className="text-muted" style={{ marginLeft: '12px' }}>
+              of {totalItems} entries
+            </span>
           </div>
           <div className="d-flex gap-2">
             <button
@@ -291,7 +316,6 @@ const Jewellery = () => {
               </button>
             </div>
             <form onSubmit={handleSubmit} className="modal-form">
-              {/* Jewellery ID */}
               <div className="input-group">
                 <label>Jewellery ID *</label>
                 <input
@@ -304,8 +328,6 @@ const Jewellery = () => {
                   placeholder="e.g. J1001"
                 />
               </div>
-
-              {/* Design Number */}
               <div className="input-group">
                 <label>Design Number *</label>
                 <input
@@ -318,8 +340,6 @@ const Jewellery = () => {
                   placeholder="e.g. D101"
                 />
               </div>
-
-              {/* Collection Type */}
               <div className="input-group">
                 <label>Collection Type</label>
                 <input
@@ -331,8 +351,6 @@ const Jewellery = () => {
                   placeholder="e.g. Gold, Platinum"
                 />
               </div>
-
-              {/* Metal Type */}
               <div className="input-group">
                 <label>Metal Type</label>
                 <input
@@ -344,8 +362,6 @@ const Jewellery = () => {
                   placeholder="e.g. Yellow Gold"
                 />
               </div>
-
-              {/* Category */}
               <div className="input-group">
                 <label>Category</label>
                 <input
@@ -357,8 +373,6 @@ const Jewellery = () => {
                   placeholder="e.g. Ring, Necklace"
                 />
               </div>
-
-              {/* Sub‑category */}
               <div className="input-group">
                 <label>Sub‑category</label>
                 <input
@@ -370,8 +384,6 @@ const Jewellery = () => {
                   placeholder="e.g. Engagement, Wedding"
                 />
               </div>
-
-              {/* Status */}
               <div className="input-group">
                 <label>Status</label>
                 <select name="status" className="login-input" value={formData.status} onChange={handleChange}>
@@ -379,7 +391,6 @@ const Jewellery = () => {
                   <option value="inactive">Inactive</option>
                 </select>
               </div>
-
               <div className="modal-actions">
                 <button type="button" className="btn btn-light" onClick={() => setModalOpen(false)}>
                   Cancel
