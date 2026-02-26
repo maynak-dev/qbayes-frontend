@@ -27,6 +27,11 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
   const [loadingShops, setLoadingShops] = useState(false);
   const [loadingRoles, setLoadingRoles] = useState(false);
 
+  // Log formData changes for debugging
+  useEffect(() => {
+    console.log('Current formData:', formData);
+  }, [formData]);
+
   // Fetch companies when modal opens
   useEffect(() => {
     if (!isOpen) return;
@@ -67,6 +72,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
   // Populate form when user changes (modal opens with a user)
   useEffect(() => {
     if (user) {
+      console.log('User data received:', user);
       setFormData({
         username: user.username || '',
         name: user.name || '',
@@ -89,13 +95,15 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       return;
     }
     const selectedCompany = companies.find(c => c.name === formData.company);
-    if (!selectedCompany) return;
+    if (!selectedCompany) {
+      // If company not found, still keep the location value
+      return;
+    }
     const fetchLocations = async () => {
       setLoadingLocations(true);
       try {
         const res = await api.get(`/locations/?company=${selectedCompany.id}`);
         setLocations(res.data);
-        // No reset – keep the current location value even if invalid
       } catch (err) {
         console.error('Failed to load locations', err);
         setError('Failed to load locations. Please try again.');
@@ -119,7 +127,6 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       try {
         const res = await api.get(`/shops/?location=${selectedLocation.id}`);
         setShops(res.data);
-        // No reset – keep the current shop value even if invalid
       } catch (err) {
         console.error('Failed to load shops', err);
         setError('Failed to load shops. Please try again.');
@@ -143,7 +150,6 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       try {
         const res = await api.get(`/roles/?shop=${selectedShop.id}`);
         setRoles(res.data);
-        // No reset – keep the current role value even if invalid
       } catch (err) {
         console.error('Failed to load roles', err);
         setError('Failed to load roles. Please try again.');
