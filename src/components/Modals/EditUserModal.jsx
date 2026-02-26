@@ -77,13 +77,13 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
         username: user.username || '',
         name: user.name || '',
         email: user.email || '',
-        phone: user.phone || '',
-        role: user.role || '',
-        company: user.company || '',
-        location: user.location || '',
-        shop: user.shop || '',
-        status: user.status || 'Pending',
-        steps: user.steps || 0,
+        phone: user.phone || user.profile?.phone || '',
+        role: user.role || user.profile?.role || '',
+        company: user.company || user.profile?.company || '',
+        location: user.location || user.profile?.location || '',
+        shop: user.shop || user.profile?.shop || '',
+        status: user.status || user.profile?.status || 'Pending',
+        steps: user.steps || user.profile?.steps || 0,
       });
     }
   }, [user]);
@@ -95,10 +95,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       return;
     }
     const selectedCompany = companies.find(c => c.name === formData.company);
-    if (!selectedCompany) {
-      // If company not found, still keep the location value
-      return;
-    }
+    if (!selectedCompany) return;
     const fetchLocations = async () => {
       setLoadingLocations(true);
       try {
