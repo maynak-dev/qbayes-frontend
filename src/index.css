@@ -118,6 +118,14 @@ body {
   }
 }
 
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
 .admin-header {
   background-color: #fff;
   padding: 16px 24px;
