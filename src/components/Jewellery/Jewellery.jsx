@@ -161,7 +161,7 @@ const Jewellery = () => {
       {/* Header with title, refresh and create buttons */}
       <div className="d-flex flex-wrap align-center justify-content-between mb-4">
         <div>
-          <h2 className="card-title" style={{ fontSize: '1.5rem', marginBottom: '4px' }}>
+          <h2 className="card-title" style={{ fontSize: '1.5rem',fontWeight: 600, marginBottom: '4px' }}>
             Jewellery Management
           </h2>
           <p className="text-muted" style={{ fontSize: '0.95rem' }}>
