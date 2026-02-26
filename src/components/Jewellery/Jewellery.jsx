@@ -21,7 +21,7 @@ const Jewellery = () => {
   const [error, setError] = useState('');
   const [initialLoad, setInitialLoad] = useState(true);
 
-  // Delete modal state (optional – you can use window.confirm)
+  // Delete modal state
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -110,7 +110,6 @@ const Jewellery = () => {
     }
   };
 
-  // Delete handlers (using a confirmation modal)
   const openDeleteModal = (item) => {
     setItemToDelete(item);
     setDeleteModalOpen(true);
@@ -147,7 +146,7 @@ const Jewellery = () => {
 
   return (
     <div className="fade-in">
-      {/* Header */}
+      {/* Header with title and create button */}
       <div className="d-flex flex-wrap align-center justify-content-between mb-4">
         <div>
           <h2 className="card-title" style={{ fontSize: '1.5rem', marginBottom: '4px' }}>
@@ -167,7 +166,7 @@ const Jewellery = () => {
 
       {error && <div className="modal-error mb-3">{error}</div>}
 
-      {/* Search */}
+      {/* Search input */}
       <div className="admin-card p-3 mb-4">
         <div className="search-input-wrapper" style={{ maxWidth: '300px' }}>
           <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" className="search-icon" height="1em" width="1em">
@@ -183,10 +182,10 @@ const Jewellery = () => {
         </div>
       </div>
 
-      {/* Table */}
+      {/* Table Card */}
       <div className="admin-card" style={{ padding: 0, overflow: 'hidden' }}>
         <div className="table-responsive">
-          <table className="table" style={{ minWidth: '1000px' }}>
+          <table className="table table-row-hover" style={{ minWidth: '1000px' }}>
             <thead style={{ background: '#f9fafc' }}>
               <tr>
                 <th style={{ padding: '16px 20px' }}>Jewellery ID</th>
@@ -203,7 +202,7 @@ const Jewellery = () => {
             <tbody>
               {paginatedItems.length > 0 ? (
                 paginatedItems.map(item => (
-                  <tr key={item.id} style={{ borderBottom: '1px solid #eff2f5' }}>
+                  <tr key={item.id} className="table-row-hover" style={{ borderBottom: '1px solid #eff2f5' }}>
                     <td style={{ padding: '16px 20px' }}>{item.jewellery_id}</td>
                     <td style={{ padding: '16px 12px' }}>{item.design_number}</td>
                     <td style={{ padding: '16px 12px' }}>{item.collection_type}</td>

@@ -171,10 +171,10 @@ const RFID = () => {
         </div>
       </div>
 
-      {/* Table */}
+      {/* Table Card */}
       <div className="admin-card" style={{ padding: 0, overflow: 'hidden' }}>
         <div className="table-responsive">
-          <table className="table" style={{ minWidth: '800px' }}>
+          <table className="table table-row-hover" style={{ minWidth: '800px' }}>
             <thead style={{ background: '#f9fafc' }}>
               <tr>
                 <th style={{ padding: '16px 20px' }}>RFID Tag</th>
@@ -187,7 +187,7 @@ const RFID = () => {
             <tbody>
               {paginatedItems.length > 0 ? (
                 paginatedItems.map(item => (
-                  <tr key={item.id} style={{ borderBottom: '1px solid #eff2f5' }}>
+                  <tr key={item.id} className="table-row-hover" style={{ borderBottom: '1px solid #eff2f5' }}>
                     <td style={{ padding: '16px 20px' }}>{item.tag}</td>
                     <td style={{ padding: '16px 12px' }}>
                       <span className={`badge ${item.status === 'active' ? 'badge-success' : 'badge-light'}`}>
