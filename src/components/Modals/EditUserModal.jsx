@@ -98,9 +98,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       try {
         const res = await api.get(`/locations/?company=${selectedCompany.id}`);
         setLocations(res.data);
-        if (res.data.length > 0 && !res.data.some(loc => loc.name === formData.location)) {
-          setFormData(prev => ({ ...prev, location: '', shop: '', role: '' }));
-        }
+        // Do not automatically reset location/shop – let the user decide
       } catch (err) {
         console.error('Failed to load locations', err);
         setError('Failed to load locations. Please try again.');
@@ -126,9 +124,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       try {
         const res = await api.get(`/shops/?location=${selectedLocation.id}`);
         setShops(res.data);
-        if (res.data.length > 0 && !res.data.some(s => s.name === formData.shop)) {
-          setFormData(prev => ({ ...prev, shop: '', role: '' }));
-        }
+        // Do not automatically reset shop – let the user decide
       } catch (err) {
         console.error('Failed to load shops', err);
         setError('Failed to load shops. Please try again.');
@@ -153,9 +149,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       try {
         const res = await api.get(`/roles/?shop=${selectedShop.id}`);
         setRoles(res.data);
-        if (res.data.length > 0 && !res.data.some(r => r.id === parseInt(formData.role))) {
-          setFormData(prev => ({ ...prev, role: '' }));
-        }
+        // Do not automatically reset role – let the user decide
       } catch (err) {
         console.error('Failed to load roles', err);
         setError('Failed to load roles. Please try again.');
@@ -173,50 +167,50 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError('');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
-  const payload = {
-    username: formData.username,
-    email: formData.email,
-    first_name: formData.name,
-    profile: {
-      phone: formData.phone,
-      role: formData.role ? parseInt(formData.role) : null,
-      company: formData.company,
-      location: formData.location,
-      shop: formData.shop,
-      status: formData.status,
-      steps: parseInt(formData.steps),
-    },
-  };
+    const payload = {
+      username: formData.username,
+      email: formData.email,
+      first_name: formData.name,
+      profile: {
+        phone: formData.phone,
+        role: formData.role ? parseInt(formData.role) : null,
+        company: formData.company,
+        location: formData.location,
+        shop: formData.shop,
+        status: formData.status,
+        steps: parseInt(formData.steps),
+      },
+    };
 
-  console.log('🔵 Edit payload:', payload);
+    console.log('🔵 Edit payload:', payload);
 
-  try {
-    const response = await api.put(`/users/${user.id}/`, payload);
-    console.log('🟢 Edit response:', response.data);
-    onUserUpdated();
-    onClose();
-  } catch (err) {
-    console.error('🔴 Edit error:', err.response?.data);
-    const data = err.response?.data;
-    let msg = 'Update failed. ';
-    if (typeof data === 'object') {
-      const errors = Object.entries(data)
-        .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`)
-        .join('; ');
-      msg += errors;
-    } else {
-      msg += 'Please try again.';
+    try {
+      const response = await api.put(`/users/${user.id}/`, payload);
+      console.log('🟢 Edit response:', response.data);
+      onUserUpdated();
+      onClose();
+    } catch (err) {
+      console.error('🔴 Edit error:', err.response?.data);
+      const data = err.response?.data;
+      let msg = 'Update failed. ';
+      if (typeof data === 'object') {
+        const errors = Object.entries(data)
+          .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`)
+          .join('; ');
+        msg += errors;
+      } else {
+        msg += 'Please try again.';
+      }
+      setError(msg);
+    } finally {
+      setLoading(false);
     }
-    setError(msg);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   if (!isOpen) return null;
 
@@ -305,6 +299,11 @@ const handleSubmit = async (e) => {
               {companies.map((comp) => (
                 <option key={comp.id} value={comp.name}>{comp.name}</option>
               ))}
+              {formData.company && !companies.some(c => c.name === formData.company) && (
+                <option value={formData.company} disabled>
+                  {formData.company} (invalid)
+                </option>
+              )}
             </select>
           </div>
 
@@ -330,6 +329,11 @@ const handleSubmit = async (e) => {
               {locations.map((loc) => (
                 <option key={loc.id} value={loc.name}>{loc.name}</option>
               ))}
+              {formData.location && !locations.some(l => l.name === formData.location) && (
+                <option value={formData.location} disabled>
+                  {formData.location} (invalid)
+                </option>
+              )}
             </select>
           </div>
 
@@ -355,6 +359,11 @@ const handleSubmit = async (e) => {
               {shops.map((shop) => (
                 <option key={shop.id} value={shop.name}>{shop.name}</option>
               ))}
+              {formData.shop && !shops.some(s => s.name === formData.shop) && (
+                <option value={formData.shop} disabled>
+                  {formData.shop} (invalid)
+                </option>
+              )}
             </select>
           </div>
 
@@ -380,6 +389,11 @@ const handleSubmit = async (e) => {
               {roles.map((role) => (
                 <option key={role.id} value={role.id}>{role.name}</option>
               ))}
+              {formData.role && !roles.some(r => r.id === parseInt(formData.role)) && (
+                <option value={formData.role} disabled>
+                  {roles.find(r => r.id === parseInt(formData.role))?.name || 'Unknown'} (invalid)
+                </option>
+              )}
             </select>
           </div>
 
