@@ -25,6 +25,27 @@ const CompanyIcon = () => (
   </svg>
 );
 
+// Diamond / Gem icon for Jewellery
+const JewelleryIcon = () => (
+  <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em">
+    <path d="M12 2L2 7v10l10 5 10-5V7l-10-5zm0 2.5L19.5 9 12 12.5 4.5 9 12 4.5zM4 9.5l7 3.5v6L4 15.5v-6zm9 10v-6l7-3.5v6L13 19.5z"></path>
+  </svg>
+);
+
+// Tag icon for RFID
+const RFIDIcon = () => (
+  <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em">
+    <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM8 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm8 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-4 4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path>
+  </svg>
+);
+
+// Link / connection icon for RFID-Jewellery Map
+const MapIcon = () => (
+  <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em">
+    <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"></path>
+  </svg>
+);
+
 const Sidebar = ({ open, onClose }) => {
   const menuItems = [
     { name: "User's Home", icon: DashboardIcon, path: '/' },
@@ -32,7 +53,11 @@ const Sidebar = ({ open, onClose }) => {
     { name: 'Designation', icon: RoleIcon, path: '/admin/roles' },
     { name: 'Users', icon: UsersIcon, path: '/admin/users' },
     { name: 'Company Creation', icon: CompanyIcon, path: '/admin/company-creation' },
+    { name: 'Jewellery', icon: JewelleryIcon, path: '/admin/jewellery' },
+    { name: 'RFID', icon: RFIDIcon, path: '/admin/rfid' },
+    { name: 'Jewellery-RFID Map', icon: MapIcon, path: '/admin/rfid-jewellery-map' },
   ];
+
 
   return (
     <div className={`admin-sidebar ${open ? 'open' : ''}`}>

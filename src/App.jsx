@@ -5,6 +5,9 @@ import Login from './components/Login/Login';
 import Users from './components/Users/Users'; 
 import CompanyCreation from './components/CompanyCreation/CompanyCreation';
 import Roles from './components/Roles/Roles'; 
+import Jewellery from './components/Jewellery/Jewellery';
+import RFID from './components/RFID/RFID';
+import RFIDJewelleryMap from './components/RFIDJewelleryMap/RFIDJewelleryMap';
 // Simple auth check – replace with real token validation if needed
 const isAuthenticated = () => {
   return localStorage.getItem('access') !== null;
@@ -62,6 +65,9 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route path="/admin/jewellery" element={<PrivateRoute><Layout><Jewellery /></Layout></PrivateRoute>} />
+        <Route path="/admin/rfid" element={<PrivateRoute><Layout><RFID /></Layout></PrivateRoute>} />
+        <Route path="/admin/rfid-jewellery-map" element={<PrivateRoute><Layout><RFIDJewelleryMap /></Layout></PrivateRoute>} />
 
         {/* Redirect root to dashboard */}
         <Route path="/" element={<Navigate to="/admin" />} />
