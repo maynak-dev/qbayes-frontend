@@ -82,11 +82,10 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     }
   }, [user]);
 
-  // Fetch locations when company changes
+  // Fetch locations when company changes – but never reset the selected location
   useEffect(() => {
     if (!formData.company) {
       setLocations([]);
-      // Do not reset location – keep it
       return;
     }
     const selectedCompany = companies.find(c => c.name === formData.company);
@@ -96,7 +95,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       try {
         const res = await api.get(`/locations/?company=${selectedCompany.id}`);
         setLocations(res.data);
-        // Do not reset location – let the user decide
+        // Do NOT reset location – keep the current value even if invalid
       } catch (err) {
         console.error('Failed to load locations', err);
         setError('Failed to load locations. Please try again.');
@@ -107,11 +106,10 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     fetchLocations();
   }, [formData.company, companies]);
 
-  // Fetch shops when location changes
+  // Fetch shops when location changes – never reset the selected shop
   useEffect(() => {
     if (!formData.location) {
       setShops([]);
-      // Do not reset shop
       return;
     }
     const selectedLocation = locations.find(l => l.name === formData.location);
@@ -121,7 +119,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       try {
         const res = await api.get(`/shops/?location=${selectedLocation.id}`);
         setShops(res.data);
-        // Do not reset shop
+        // Do NOT reset shop – keep the current value
       } catch (err) {
         console.error('Failed to load shops', err);
         setError('Failed to load shops. Please try again.');
@@ -132,11 +130,10 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     fetchShops();
   }, [formData.location, locations]);
 
-  // Fetch roles when shop changes
+  // Fetch roles when shop changes – never reset the selected role
   useEffect(() => {
     if (!formData.shop) {
       setRoles([]);
-      // Do not reset role
       return;
     }
     const selectedShop = shops.find(s => s.name === formData.shop);
@@ -146,7 +143,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       try {
         const res = await api.get(`/roles/?shop=${selectedShop.id}`);
         setRoles(res.data);
-        // Do not reset role
+        // Do NOT reset role – keep the current value
       } catch (err) {
         console.error('Failed to load roles', err);
         setError('Failed to load roles. Please try again.');
