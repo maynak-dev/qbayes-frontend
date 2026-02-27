@@ -170,138 +170,139 @@ const handleStatusChange = async (user, newStatus) => {
     return '#ffc700';
   };
 
-  if (loading) return <div className="admin-card">Loading users...</div>;
-  if (error) return <div className="admin-card">Error: {error}</div>;
+  if (loading) return <div className="card card-custom"><div className="card-body">Loading users...</div></div>;
+  if (error) return <div className="card card-custom"><div className="card-body">Error: {error}</div></div>;
 
   return (
     <>
-      <div className="fade-in">
+      <div className="card card-custom">
         {/* Header */}
-        <div className="d-flex flex-wrap gap-3 align-center justify-content-between mb-4">
-          <div>
-            <h2 className="card-title" style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '4px' }}>
+        <div className="card-header flex-wrap border-0 pt-6 pb-0">
+          <div className="card-title">
+            <h3 className="card-label">
               User Management
-            </h2>
-            <p className="text-muted" style={{ fontSize: '0.95rem' }}>
-              Manage your organization's users ({totalUsers} total)
-            </p>
+              <span className="d-block text-muted pt-2 font-size-sm">Manage your organization's users ({totalUsers} total)</span>
+            </h3>
           </div>
-          <div className="d-flex gap-2">
-            <button className="btn btn-light" title="Refresh" onClick={fetchUsers}>
-              <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1.2rem" width="1.2rem">
-                <path d="M10 11H7.101l.001-.009a4.956 4.956 0 0 1 .752-1.787 5.054 5.054 0 0 1 2.2-1.811c.302-.128.617-.226.938-.291a5.078 5.078 0 0 1 2.018 0 4.978 4.978 0 0 1 2.525 1.361l1.416-1.412a7.036 7.036 0 0 0-2.224-1.501 6.921 6.921 0 0 0-1.315-.408 7.079 7.079 0 0 0-2.819 0 6.94 6.94 0 0 0-1.316.409 7.04 7.04 0 0 0-3.08 2.534 6.978 6.978 0 0 0-1.054 2.505c-.028.135-.043.273-.063.41H2l4 4 4-4zm4 2h2.899l-.001.008a4.976 4.976 0 0 1-2.103 3.138 4.943 4.943 0 0 1-1.787.752 5.073 5.073 0 0 1-2.017 0 4.956 4.956 0 0 1-1.787-.752 5.072 5.072 0 0 1-.74-.61L7.05 16.95a7.032 7.032 0 0 0 2.225 1.5c.424.18.867.317 1.315.408a7.07 7.07 0 0 0 2.818 0 7.031 7.031 0 0 0 4.395-2.945 6.974 6.974 0 0 0 1.053-2.503c.027-.135.043-.273.063-.41H22l-4-4-4 4z"></path>
-              </svg>
+          <div className="card-toolbar">
+            <button className="btn btn-light-primary font-weight-bolder mr-2" onClick={fetchUsers}>
+              <span className="svg-icon svg-icon-md">
+                <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24">
+                  <path d="M10 11H7.101l.001-.009a4.956 4.956 0 0 1 .752-1.787 5.054 5.054 0 0 1 2.2-1.811c.302-.128.617-.226.938-.291a5.078 5.078 0 0 1 2.018 0 4.978 4.978 0 0 1 2.525 1.361l1.416-1.412a7.036 7.036 0 0 0-2.224-1.501 6.921 6.921 0 0 0-1.315-.408 7.079 7.079 0 0 0-2.819 0 6.94 6.94 0 0 0-1.316.409 7.04 7.04 0 0 0-3.08 2.534 6.978 6.978 0 0 0-1.054 2.505c-.028.135-.043.273-.063.41H2l4 4 4-4zm4 2h2.899l-.001.008a4.976 4.976 0 0 1-2.103 3.138 4.943 4.943 0 0 1-1.787.752 5.073 5.073 0 0 1-2.017 0 4.956 4.956 0 0 1-1.787-.752 5.072 5.072 0 0 1-.74-.61L7.05 16.95a7.032 7.032 0 0 0 2.225 1.5c.424.18.867.317 1.315.408a7.07 7.07 0 0 0 2.818 0 7.031 7.031 0 0 0 4.395-2.945 6.974 6.974 0 0 0 1.053-2.503c.027-.135.043-.273.063-.41H22l-4-4-4 4z"></path>
+                </svg>
+              </span>
+              Refresh
             </button>
-            <button className="btn btn-primary" onClick={() => setIsNewModalOpen(true)}>
-              <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1.2rem" width="1.2rem" style={{ marginRight: '6px' }}>
-                <path d="M19 11h-6V5h-2v6H5v2h6v6h2v-6h6z"></path>
-              </svg>
+            <button className="btn btn-primary font-weight-bolder" onClick={() => setIsNewModalOpen(true)}>
+              <span className="svg-icon svg-icon-md">
+                <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24">
+                  <path d="M19 11h-6V5h-2v6H5v2h6v6h2v-6h6z"></path>
+                </svg>
+              </span>
               Create User
             </button>
           </div>
         </div>
 
-        {/* Filters Card */}
-        <div className="admin-card" style={{ padding: '20px 24px' }}>
-          <div className="d-flex flex-wrap gap-3 align-center justify-content-between">
-            <div className="d-flex flex-wrap gap-3 align-center">
-              <div className="search-input-wrapper" style={{ minWidth: '280px', flex: '1 1 auto' }}>
-                <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" className="search-icon" height="1em" width="1em">
-                  <path d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z"></path>
-                </svg>
-                <input
-                  className="form-control search-input"
-                  placeholder="Search by name or email..."
-                  type="text"
-                  value={searchTerm}
-                  onChange={handleSearch}
-                />
+        {/* Filters */}
+        <div className="card-body">
+          <div className="row align-items-center">
+            <div className="col-lg-9 col-xl-8">
+              <div className="row align-items-center">
+                <div className="col-md-4 my-2 my-md-0">
+                  <div className="input-icon">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Search by name or email..."
+                      value={searchTerm}
+                      onChange={handleSearch}
+                    />
+                    <span>
+                      <span className="svg-icon svg-icon-md svg-icon-primary">
+                        <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24">
+                          <path d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z"></path>
+                        </svg>
+                      </span>
+                    </span>
+                  </div>
+                </div>
+                <div className="col-md-3 my-2 my-md-0">
+                  <select
+                    className="form-control"
+                    value={statusFilter}
+                    onChange={handleStatusFilterChange}
+                  >
+                    <option value="All">All Status</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Rejected">Rejected</option>
+                  </select>
+                </div>
               </div>
-              <select
-                className="form-control form-select-sm"
-                style={{ width: '160px', padding: '10px 12px', borderRadius: '30px', borderColor: '#e2e8f0' }}
-                value={statusFilter}
-                onChange={handleStatusFilterChange}
-              >
-                <option value="All">All Status</option>
-                <option value="Pending">Pending</option>
-                <option value="Approved">Approved</option>
-                <option value="Rejected">Rejected</option>
-              </select>
             </div>
-            <div className="d-flex gap-2">
-              <button className="btn btn-light btn-sm" style={{ padding: '8px 16px', borderRadius: '30px' }}>
-                <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" style={{ marginRight: '6px' }}>
-                  <path d="M7 11h10v2H7zM4 7h16v2H4zm6 8h4v2h-4z"></path>
-                </svg>
+            <div className="col-lg-3 col-xl-4 d-flex justify-content-end">
+              <button className="btn btn-light-primary font-weight-bolder btn-sm">
+                <span className="svg-icon svg-icon-sm">
+                  <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24">
+                    <path d="M7 11h10v2H7zM4 7h16v2H4zm6 8h4v2h-4z"></path>
+                  </svg>
+                </span>
                 Filter
               </button>
-              <button className="btn btn-light btn-sm" style={{ padding: '8px 16px', borderRadius: '30px' }}>Export</button>
+              <button className="btn btn-light-primary font-weight-bolder btn-sm ml-2">Export</button>
             </div>
           </div>
-        </div>
 
-        {/* Table Card */}
-        <div className="admin-card" style={{ padding: 0, overflow: 'hidden', marginTop: '20px' }}>
-          <div className="table-responsive" style={{ overflowX: 'auto' }}>
-            <table className="table" style={{ minWidth: '1200px', width: '100%', borderCollapse: 'separate', borderSpacing: '0 8px' }}>
-              <thead style={{ background: '#f9fafc' }}>
+          {/* Table */}
+          <div className="table-responsive mt-6">
+            <table className="table table-head-custom table-separate table-checkable">
+              <thead>
                 <tr>
-                  <th style={{ padding: '16px 20px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Profile</th>
-                  <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    Name <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" style={{ marginLeft: '4px', verticalAlign: 'middle' }} height="14" width="14"><path d="M7 20h2V8h3L8 4 4 8h3zm13-4h-3V4h-2v12h-3l4 4z"></path></svg>
-                  </th>
-                  <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Status</th>
-                  <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Role</th>
-                  <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Company</th>
-                  <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Location</th>
-                  <th style={{ padding: '16px 12px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Shop</th>
-                  <th style={{ padding: '16px 20px', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', textAlign: 'center' }}>Actions</th>
+                  <th className="text-center">Profile</th>
+                  <th>Name</th>
+                  <th>Status</th>
+                  <th>Role</th>
+                  <th>Company</th>
+                  <th>Location</th>
+                  <th>Shop</th>
+                  <th className="text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {paginatedUsers.length > 0 ? (
                   paginatedUsers.map((user) => (
-                    <tr key={user.id} className="table-row-hover" style={{ background: '#fff', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', borderRadius: '16px', transition: 'all 0.2s', cursor: 'pointer' }}>
-                      <td style={{ padding: '16px 20px' }}>
+                    <tr key={user.id}>
+                      <td className="text-center">
                         <div
+                          className="symbol symbol-40 symbol-light"
                           style={{
-                            width: '48px',
-                            height: '48px',
-                            borderRadius: '16px',
                             background: getInitialsBg(user.name || user.username),
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '1.2rem',
-                            fontWeight: '600',
                             color: getInitialsColor(user.profile?.status),
                           }}
                         >
-                          {getInitials(user.name || user.username)}
+                          <span className="symbol-label font-weight-bolder">
+                            {getInitials(user.name || user.username)}
+                          </span>
                         </div>
                       </td>
-                      <td style={{ padding: '16px 12px' }}>
-                        <div className="d-flex" style={{ flexDirection: 'column' }}>
-                          <span className="fw-bold" style={{ fontSize: '1rem', color: '#0f172a' }}>
+                      <td>
+                        <div className="d-flex flex-column">
+                          <span className="text-dark-75 font-weight-bolder text-hover-primary mb-1 font-size-lg">
                             {user.name || user.username}
                           </span>
-                          <span className="text-muted" style={{ fontSize: '0.85rem', marginTop: '4px' }}>
+                          <span className="text-muted font-weight-bold text-hover-primary">
                             {user.email}
                           </span>
                         </div>
                       </td>
-                      <td style={{ padding: '16px 12px' }}>
+                      <td>
                         <select
-                          className="form-control form-select-sm"
+                          className="form-control form-control-sm"
                           value={user.profile?.status || 'Pending'}
                           onChange={(e) => handleStatusChange(user, e.target.value)}
                           disabled={updatingStatus === user.id}
                           style={{
-                            padding: '6px 12px',
-                            borderRadius: '30px',
-                            border: '1px solid #e2e8f0',
-                            backgroundColor: '#fff',
                             fontWeight: 500,
                             color: user.profile?.status === 'Approved' ? '#1d874b' : user.profile?.status === 'Rejected' ? '#b42318' : '#b45b0e',
                           }}
@@ -311,37 +312,60 @@ const handleStatusChange = async (user, newStatus) => {
                           <option value="Rejected">Rejected</option>
                         </select>
                         {updatingStatus === user.id && (
-                          <span className="small text-muted ms-2">Updating...</span>
+                          <span className="text-muted ml-2">Updating...</span>
                         )}
                       </td>
-                      <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.9rem' }}>
-                        {user.role_details?.name || 'Not assigned'}
+                      <td>
+                        <span className="text-dark-75 font-weight-bold">
+                          {user.role_details?.name || 'Not assigned'}
+                        </span>
                       </td>
-                      <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.9rem' }}>
-                        {getUserField(user, 'company')}
+                      <td>
+                        <span className="text-dark-75 font-weight-bold">
+                          {getUserField(user, 'company')}
+                        </span>
                       </td>
-                      <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.9rem' }}>
-                        {getUserField(user, 'location')}
+                      <td>
+                        <span className="text-dark-75 font-weight-bold">
+                          {getUserField(user, 'location')}
+                        </span>
                       </td>
-                      <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.9rem' }}>
-                        {getUserField(user, 'shop')}
+                      <td>
+                        <span className="text-dark-75 font-weight-bold">
+                          {getUserField(user, 'shop')}
+                        </span>
                       </td>
-                      <td style={{ padding: '16px 20px', textAlign: 'center' }}>
-                        <div className="d-flex gap-2 justify-content-center">
-                          <button className="btn btn-icon btn-light btn-sm" title="View" onClick={() => handleView(user)} style={{ padding: '8px', borderRadius: '12px' }}>
-                            <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
-                              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path>
-                            </svg>
+                      <td className="text-center">
+                        <div className="d-flex justify-content-center">
+                          <button
+                            className="btn btn-icon btn-light btn-sm mx-1"
+                            onClick={() => handleView(user)}
+                          >
+                            <span className="svg-icon svg-icon-md">
+                              <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24">
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path>
+                              </svg>
+                            </span>
                           </button>
-                          <button className="btn btn-icon btn-light btn-sm" title="Edit" onClick={() => handleEdit(user)} style={{ padding: '8px', borderRadius: '12px' }}>
-                            <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
-                              <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
-                            </svg>
+                          <button
+                            className="btn btn-icon btn-light btn-sm mx-1"
+                            onClick={() => handleEdit(user)}
+                          >
+                            <span className="svg-icon svg-icon-md">
+                              <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24">
+                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
+                              </svg>
+                            </span>
                           </button>
-                          <button className="btn btn-icon btn-light btn-sm" title="Delete" onClick={() => handleDelete(user)} style={{ padding: '8px', borderRadius: '12px' }}>
-                            <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
-                              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path>
-                            </svg>
+                          <button
+                            className="btn btn-icon btn-light btn-sm mx-1"
+                            onClick={() => handleDelete(user)}
+                          >
+                            <span className="svg-icon svg-icon-md">
+                              <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24">
+                                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path>
+                              </svg>
+                            </span>
                           </button>
                         </div>
                       </td>
@@ -349,7 +373,7 @@ const handleStatusChange = async (user, newStatus) => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="8" className="text-center py-5 text-muted" style={{ fontSize: '1rem' }}>No users found</td>
+                    <td colSpan="8" className="text-center py-5 text-muted">No users found</td>
                   </tr>
                 )}
               </tbody>
@@ -357,12 +381,12 @@ const handleStatusChange = async (user, newStatus) => {
           </div>
 
           {/* Pagination */}
-          <div className="d-flex flex-wrap gap-3 align-center justify-content-between" style={{ padding: '20px 24px', borderTop: '1px solid #eff2f5' }}>
-            <div className="d-flex align-center">
-              <span className="text-muted" style={{ marginRight: '12px' }}>Show</span>
+          <div className="d-flex justify-content-between align-items-center flex-wrap mt-8">
+            <div className="d-flex align-items-center">
+              <span className="text-muted mr-2">Show</span>
               <select
-                className="form-control form-select-sm"
-                style={{ width: '70px', padding: '6px 8px', borderRadius: '20px', borderColor: '#e2e8f0' }}
+                className="form-control form-control-sm font-weight-bold mr-2"
+                style={{ width: '70px' }}
                 value={rowsPerPage}
                 onChange={handleRowsPerPageChange}
               >
@@ -370,27 +394,23 @@ const handleStatusChange = async (user, newStatus) => {
                 <option value="20">20</option>
                 <option value="50">50</option>
               </select>
-              <span className="text-muted" style={{ marginLeft: '12px' }}>
-                of {totalUsers} users
-              </span>
+              <span className="text-muted">of {totalUsers} users</span>
             </div>
-            <div className="d-flex gap-2">
+            <div className="d-flex">
               <button
-                className="btn btn-sm btn-light"
+                className="btn btn-light-primary font-weight-bolder btn-sm"
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(currentPage - 1)}
-                style={{ padding: '8px 16px', borderRadius: '30px' }}
               >
                 Previous
               </button>
-              <span className="btn btn-sm btn-primary" style={{ padding: '8px 16px', borderRadius: '30px', background: '#3e97ff', color: '#fff' }}>
+              <span className="btn btn-primary font-weight-bolder btn-sm mx-2">
                 {currentPage}
               </span>
               <button
-                className="btn btn-sm btn-light"
+                className="btn btn-light-primary font-weight-bolder btn-sm"
                 disabled={currentPage === totalPages || totalPages === 0}
                 onClick={() => setCurrentPage(currentPage + 1)}
-                style={{ padding: '8px 16px', borderRadius: '30px' }}
               >
                 Next
               </button>
