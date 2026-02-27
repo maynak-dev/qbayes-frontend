@@ -186,7 +186,7 @@ const Users = () => {
 
   return (
     <>
-      <div className="fade-in" style={{ padding: '0 24px' }}>
+      <div className="fade-in" style={{ padding: '24px 0' }}>
         {/* Header - now with same left/right padding as filter card */}
         <div className="d-flex flex-wrap gap-3 align-center justify-content-between mb-4" style={{ paddingLeft: 0, paddingRight: 0 }}>
           <div>
