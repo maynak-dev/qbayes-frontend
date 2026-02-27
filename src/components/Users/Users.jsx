@@ -167,14 +167,28 @@ const Users = () => {
     return '#b45309';
   };
 
+  // Helper to get status background color
+  const getStatusBg = (status) => {
+    if (status === 'Approved') return '#ecfdf3';
+    if (status === 'Rejected') return '#fef2f2';
+    return '#fffbeb';
+  };
+
+  // Helper to get status border color
+  const getStatusBorder = (status) => {
+    if (status === 'Approved') return '#abefc6';
+    if (status === 'Rejected') return '#fecaca';
+    return '#fed7aa';
+  };
+
   if (loading) return <div className="admin-card">Loading users...</div>;
   if (error) return <div className="admin-card">Error: {error}</div>;
 
   return (
     <>
-      <div className="fade-in">
-        {/* Header */}
-        <div className="d-flex flex-wrap gap-3 align-center justify-content-between mb-4">
+      <div className="fade-in" style={{ padding: '0 24px' }}>
+        {/* Header - now with same left/right padding as filter card */}
+        <div className="d-flex flex-wrap gap-3 align-center justify-content-between mb-4" style={{ paddingLeft: 0, paddingRight: 0 }}>
           <div>
             <h2 className="card-title" style={{ fontSize: '1.75rem', fontWeight: 600, marginBottom: '4px', color: '#0b1b33' }}>
               User Management
@@ -259,95 +273,107 @@ const Users = () => {
               </thead>
               <tbody>
                 {paginatedUsers.length > 0 ? (
-                  paginatedUsers.map((user) => (
-                    <tr key={user.id} className="table-row-hover" style={{ background: '#fff', boxShadow: '0 4px 12px rgba(0,0,0,0.02)', borderRadius: '20px', transition: 'all 0.2s', cursor: 'pointer' }}>
-                      <td style={{ padding: '16px 20px' }}>
-                        <div
-                          style={{
-                            width: '48px',
-                            height: '48px',
-                            borderRadius: '16px',
-                            background: getInitialsBg(user.name || user.username),
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '1.2rem',
-                            fontWeight: '600',
-                            color: getInitialsColor(user.profile?.status),
-                          }}
-                        >
-                          {getInitials(user.name || user.username)}
-                        </div>
-                      </td>
-                      <td style={{ padding: '16px 12px' }}>
-                        <div className="d-flex" style={{ flexDirection: 'column' }}>
-                          <span className="fw-bold" style={{ fontSize: '1rem', color: '#0b1b33' }}>
-                            {user.name || user.username}
-                          </span>
-                          <span className="text-muted" style={{ fontSize: '0.85rem', marginTop: '4px', color: '#5e6f8d' }}>
-                            {user.email}
-                          </span>
-                        </div>
-                      </td>
-                      <td style={{ padding: '16px 12px' }}>
-                        <select
-                          className="form-control form-select-sm"
-                          value={user.profile?.status || 'Pending'}
-                          onChange={(e) => handleStatusChange(user, e.target.value)}
-                          disabled={updatingStatus === user.id}
-                          style={{
-                            padding: '8px 16px',
-                            borderRadius: '40px',
-                            border: '1px solid #e6edf4',
-                            backgroundColor: '#fff',
-                            fontWeight: 500,
-                            fontSize: '0.9rem',
-                            color: user.profile?.status === 'Approved' ? '#059669' : user.profile?.status === 'Rejected' ? '#b91c1c' : '#b45309',
-                            outline: 'none',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          <option value="Pending">Pending</option>
-                          <option value="Approved">Approved</option>
-                          <option value="Rejected">Rejected</option>
-                        </select>
-                        {updatingStatus === user.id && (
-                          <span className="small text-muted ms-2" style={{ color: '#5e6f8d' }}>Updating...</span>
-                        )}
-                      </td>
-                      <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.95rem' }}>
-                        {user.role_details?.name || 'Not assigned'}
-                      </td>
-                      <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.95rem' }}>
-                        {getUserField(user, 'company')}
-                      </td>
-                      <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.95rem' }}>
-                        {getUserField(user, 'location')}
-                      </td>
-                      <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.95rem' }}>
-                        {getUserField(user, 'shop')}
-                      </td>
-                      <td style={{ padding: '16px 20px', textAlign: 'center' }}>
-                        <div className="d-flex gap-2 justify-content-center">
-                          <button className="btn btn-icon btn-light btn-sm" title="View" onClick={() => handleView(user)} style={{ padding: '8px', borderRadius: '12px', border: '1px solid #e6edf4', background: '#fff', color: '#5e6f8d', transition: 'all 0.2s' }}>
-                            <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
-                              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path>
-                            </svg>
-                          </button>
-                          <button className="btn btn-icon btn-light btn-sm" title="Edit" onClick={() => handleEdit(user)} style={{ padding: '8px', borderRadius: '12px', border: '1px solid #e6edf4', background: '#fff', color: '#5e6f8d', transition: 'all 0.2s' }}>
-                            <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
-                              <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
-                            </svg>
-                          </button>
-                          <button className="btn btn-icon btn-light btn-sm" title="Delete" onClick={() => handleDelete(user)} style={{ padding: '8px', borderRadius: '12px', border: '1px solid #e6edf4', background: '#fff', color: '#5e6f8d', transition: 'all 0.2s' }}>
-                            <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
-                              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path>
-                            </svg>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+                  paginatedUsers.map((user) => {
+                    const currentStatus = user.profile?.status || 'Pending';
+                    return (
+                      <tr key={user.id} className="table-row-hover" style={{ background: '#fff', boxShadow: '0 4px 12px rgba(0,0,0,0.02)', borderRadius: '20px', transition: 'all 0.2s', cursor: 'pointer' }}>
+                        <td style={{ padding: '16px 20px' }}>
+                          <div
+                            style={{
+                              width: '48px',
+                              height: '48px',
+                              borderRadius: '16px',
+                              background: getInitialsBg(user.name || user.username),
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: '1.2rem',
+                              fontWeight: '600',
+                              color: getInitialsColor(currentStatus),
+                            }}
+                          >
+                            {getInitials(user.name || user.username)}
+                          </div>
+                        </td>
+                        <td style={{ padding: '16px 12px' }}>
+                          <div className="d-flex" style={{ flexDirection: 'column' }}>
+                            <span className="fw-bold" style={{ fontSize: '1rem', color: '#0b1b33' }}>
+                              {user.name || user.username}
+                            </span>
+                            <span className="text-muted" style={{ fontSize: '0.85rem', marginTop: '4px', color: '#5e6f8d' }}>
+                              {user.email}
+                            </span>
+                          </div>
+                        </td>
+                        <td style={{ padding: '16px 12px' }}>
+                          <div style={{ position: 'relative', display: 'inline-block' }}>
+                            <select
+                              className="form-control form-select-sm"
+                              value={currentStatus}
+                              onChange={(e) => handleStatusChange(user, e.target.value)}
+                              disabled={updatingStatus === user.id}
+                              style={{
+                                padding: '8px 32px 8px 16px',
+                                borderRadius: '40px',
+                                border: `1px solid ${getStatusBorder(currentStatus)}`,
+                                backgroundColor: getStatusBg(currentStatus),
+                                fontWeight: 500,
+                                fontSize: '0.9rem',
+                                color: getInitialsColor(currentStatus),
+                                outline: 'none',
+                                cursor: 'pointer',
+                                appearance: 'none',
+                                WebkitAppearance: 'none',
+                                MozAppearance: 'none',
+                                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235e6f8d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+                                backgroundRepeat: 'no-repeat',
+                                backgroundPosition: 'right 12px center',
+                                backgroundSize: '14px',
+                              }}
+                            >
+                              <option value="Pending">Pending</option>
+                              <option value="Approved">Approved</option>
+                              <option value="Rejected">Rejected</option>
+                            </select>
+                            {updatingStatus === user.id && (
+                              <span className="small text-muted" style={{ position: 'absolute', right: '-60px', top: '50%', transform: 'translateY(-50%)', color: '#5e6f8d', whiteSpace: 'nowrap' }}>Updating...</span>
+                            )}
+                          </div>
+                        </td>
+                        <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.95rem' }}>
+                          {user.role_details?.name || 'Not assigned'}
+                        </td>
+                        <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.95rem' }}>
+                          {getUserField(user, 'company')}
+                        </td>
+                        <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.95rem' }}>
+                          {getUserField(user, 'location')}
+                        </td>
+                        <td style={{ padding: '16px 12px', color: '#334155', fontSize: '0.95rem' }}>
+                          {getUserField(user, 'shop')}
+                        </td>
+                        <td style={{ padding: '16px 20px', textAlign: 'center' }}>
+                          <div className="d-flex gap-2 justify-content-center">
+                            <button className="btn btn-icon btn-light btn-sm" title="View" onClick={() => handleView(user)} style={{ padding: '8px', borderRadius: '12px', border: '1px solid #e6edf4', background: '#fff', color: '#5e6f8d', transition: 'all 0.2s' }}>
+                              <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path>
+                              </svg>
+                            </button>
+                            <button className="btn btn-icon btn-light btn-sm" title="Edit" onClick={() => handleEdit(user)} style={{ padding: '8px', borderRadius: '12px', border: '1px solid #e6edf4', background: '#fff', color: '#5e6f8d', transition: 'all 0.2s' }}>
+                              <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
+                                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path>
+                              </svg>
+                            </button>
+                            <button className="btn btn-icon btn-light btn-sm" title="Delete" onClick={() => handleDelete(user)} style={{ padding: '8px', borderRadius: '12px', border: '1px solid #e6edf4', background: '#fff', color: '#5e6f8d', transition: 'all 0.2s' }}>
+                              <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="18" width="18">
+                                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path>
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
                 ) : (
                   <tr>
                     <td colSpan="8" className="text-center py-5 text-muted" style={{ fontSize: '1rem', color: '#5e6f8d' }}>No users found</td>
