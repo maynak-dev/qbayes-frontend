@@ -209,7 +209,7 @@ const RFID = () => {
                 <th style={{ padding: '16px 12px' }}>Status</th>
                 <th style={{ padding: '16px 12px' }}>Added By</th>
                 <th style={{ padding: '16px 12px' }}>Created</th>
-                <th style={{ padding: '16px 30px 12px', textAlign: 'center' }}>Actions</th>
+                <th style={{ padding: '16px 28px 12px 0PX', textAlign: 'center' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
