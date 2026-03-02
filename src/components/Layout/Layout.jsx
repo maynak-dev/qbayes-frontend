@@ -6,9 +6,14 @@ const Layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   // Memoize toggle function to prevent unnecessary re-renders
-  const toggleSidebar = useCallback(() => {
-    setSidebarOpen(prev => !prev);
-  }, []);
+  // const toggleSidebar = useCallback(() => {
+  //   setSidebarOpen(prev => !prev);
+  // }, []);
+
+  const toggleSidebar = () => {
+  console.log('Toggle clicked, current state:', sidebarOpen);
+  setSidebarOpen(!sidebarOpen);
+};
 
   const closeSidebar = useCallback(() => {
     setSidebarOpen(false);
