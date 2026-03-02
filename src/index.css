@@ -1028,3 +1028,43 @@ body {
   width: 18px;
   height: 18px;
 }
+
+/* Adjust glass modal size and scrolling */
+.modal-glass {
+  max-width: 480px;        /* Smaller width */
+  width: 90%;
+  max-height: 85vh;        /* Limit height to 85% of viewport */
+  display: flex;
+  flex-direction: column;
+  padding: 0;              /* Remove padding, we'll add inside */
+}
+
+.modal-glass .modal-header {
+  flex-shrink: 0;          /* Prevent header from shrinking */
+  padding: 20px 24px;
+  border-bottom: 1px solid #eef0f5;
+}
+
+.modal-glass form {
+  flex: 1;                 /* Take remaining space */
+  overflow-y: auto;        /* Enable vertical scroll */
+  padding: 20px 24px 24px;
+}
+
+/* Optional: make inputs slightly more compact */
+.modal-input {
+  padding: 10px 14px;
+  font-size: 0.9rem;
+}
+
+.input-group {
+  margin-bottom: 16px;
+}
+
+.input-group label {
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+  display: block;
+  color: #64748b;
+  font-weight: 500;
+}

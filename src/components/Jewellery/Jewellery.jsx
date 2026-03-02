@@ -157,7 +157,7 @@ const Jewellery = () => {
     }
   };
 
-  // Optional: toggle status (if backend supports PATCH)
+  // Toggle status (requires backend PATCH support)
   const toggleStatus = async (item) => {
     const newStatus = item.status === 'active' ? 'inactive' : 'active';
     try {
@@ -341,7 +341,7 @@ const Jewellery = () => {
         </div>
       </div>
 
-      {/* Create/Edit Modal (glass) */}
+      {/* Create/Edit Modal (glass, scrollable) */}
       {modalOpen && (
         <div className="modal-overlay" onClick={() => setModalOpen(false)}>
           <div className="modal-glass" onClick={(e) => e.stopPropagation()}>
