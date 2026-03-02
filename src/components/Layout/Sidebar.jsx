@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 
-// Icons (simplified)
+// Icons
 const DashboardIcon = () => (
   <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em">
     <path d="M10 3H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zM9 9H5V5h4v4zm5 2h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1zm1-6h4v4h-4V5zM3 20a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v6zm2-5h4v4H5v-4zm8 5a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6zm2-5h4v4h-4v-4z"></path>
@@ -19,27 +19,25 @@ const RoleIcon = () => (
     <path d="m15.742 10.71-1.408-1.42-3.331 3.299-1.296-1.296-1.414 1.414 2.704 2.704z"></path>
   </svg>
 );
+
 const CompanyIcon = () => (
   <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em">
     <path d="M20 6h-3V4c0-1.103-.897-2-2-2H9c-1.103 0-2 .897-2 2v2H4c-1.103 0-2 .897-2 2v11c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V8c0-1.103-.897-2-2-2zm-5-2v2H9V4h6zM8 8h12v3H4V8h4zM4 19v-6h6v2h4v-2h6l.001 6H4z"></path>
   </svg>
 );
 
-// Diamond / Gem icon for Jewellery
 const JewelleryIcon = () => (
   <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em">
     <path d="M12 2L2 7v10l10 5 10-5V7l-10-5zm0 2.5L19.5 9 12 12.5 4.5 9 12 4.5zM4 9.5l7 3.5v6L4 15.5v-6zm9 10v-6l7-3.5v6L13 19.5z"></path>
   </svg>
 );
 
-// Tag icon for RFID
 const RFIDIcon = () => (
   <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em">
     <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V6h16v12zM8 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm8 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-4 4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path>
   </svg>
 );
 
-// Link / connection icon for RFID-Jewellery Map
 const MapIcon = () => (
   <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em">
     <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"></path>
@@ -47,17 +45,15 @@ const MapIcon = () => (
 );
 
 const Sidebar = ({ open, onClose }) => {
-  const menuItems = [
-    { name: "User's Home", icon: DashboardIcon, path: '/' },
-    { name: 'Dashboard', icon: DashboardIcon, path: '/admin' },
-    { name: 'Designation', icon: RoleIcon, path: '/admin/roles' },
+  // All secondary items (to be nested under Dashboard)
+  const subMenuItems = [
     { name: 'Users', icon: UsersIcon, path: '/admin/users' },
+    { name: 'Designation', icon: RoleIcon, path: '/admin/roles' },
     { name: 'Company Creation', icon: CompanyIcon, path: '/admin/company-creation' },
     { name: 'Jewellery', icon: JewelleryIcon, path: '/admin/jewellery' },
     { name: 'RFID', icon: RFIDIcon, path: '/admin/rfid' },
     { name: 'Jewellery-RFID Map', icon: MapIcon, path: '/admin/rfid-jewellery-map' },
   ];
-
 
   return (
     <div className={`admin-sidebar ${open ? 'open' : ''}`}>
@@ -66,25 +62,41 @@ const Sidebar = ({ open, onClose }) => {
           <span>QBayes</span>
         </div>
         <button className="sidebar-close-btn" onClick={onClose}>
-          <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="24" width="24">
-            <path d="m16.192 6.344-4.243 4.242-4.242-4.242-1.414 1.414L10.535 12l-4.242 4.242 1.414 1.414 4.242-4.242 4.243 4.242 1.414-1.414L13.364 12l4.242-4.242z"></path>
+          <svg stroke="currentColor" fill="currentColor" viewBox="0 0 24 24" height="24" width="24">
+            <path d="m16.192 6.344-4.243 4.242-4.242-4.242-1.414 1.414L10.535 12l-4.242 4.242 1.414 1.414 4.242-4.242 4.243 4.242 1.414-1.414L13.364 12l4.242-4.242z" />
           </svg>
         </button>
       </div>
+
       <div className="admin-sidebar-menu">
-        {menuItems.map((item) => (
-          <NavLink
-            key={item.name}
-            to={item.path}
-            className={({ isActive }) => `admin-sidebar-item ${isActive ? 'active' : ''}`}
-            onClick={onClose}
-          >
-            <span className="admin-sidebar-icon">
-              <item.icon />
-            </span>
-            <span>{item.name}</span>
-          </NavLink>
-        ))}
+        {/* Dashboard – main item */}
+        <NavLink
+          to="/admin"
+          className={({ isActive }) => `admin-sidebar-item ${isActive ? 'active' : ''}`}
+          onClick={onClose}
+        >
+          <span className="admin-sidebar-icon">
+            <DashboardIcon />
+          </span>
+          <span>Dashboard</span>
+        </NavLink>
+
+        {/* Nested items under Dashboard (with indentation) */}
+        <div className="admin-sidebar-submenu">
+          {subMenuItems.map((item) => (
+            <NavLink
+              key={item.name}
+              to={item.path}
+              className={({ isActive }) => `admin-sidebar-item admin-sidebar-subitem ${isActive ? 'active' : ''}`}
+              onClick={onClose}
+            >
+              <span className="admin-sidebar-icon">
+                <item.icon />
+              </span>
+              <span>{item.name}</span>
+            </NavLink>
+          ))}
+        </div>
       </div>
     </div>
   );

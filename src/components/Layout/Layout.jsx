@@ -1,18 +1,26 @@
-import { useState } from 'react'
-import Sidebar from './Sidebar'
-import Header from './Header'
+import { useState, useCallback } from 'react';
+import Sidebar from './Sidebar';
+import Header from './Header';
 
 const Layout = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen)
-  }
+  // Memoize toggle function to prevent unnecessary re-renders
+  const toggleSidebar = useCallback(() => {
+    setSidebarOpen(prev => !prev);
+  }, []);
+
+  const closeSidebar = useCallback(() => {
+    setSidebarOpen(false);
+  }, []);
 
   return (
     <div className={`admin-wrapper ${sidebarOpen ? 'sidebar-open' : ''}`}>
-      <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)}></div>
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      {/* Overlay for mobile – clicking closes the sidebar */}
+      <div className="sidebar-overlay" onClick={closeSidebar} />
+
+      <Sidebar open={sidebarOpen} onClose={closeSidebar} />
+
       <div className="admin-main">
         <Header onMenuClick={toggleSidebar} />
         <div className="admin-content">
@@ -20,7 +28,7 @@ const Layout = ({ children }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;

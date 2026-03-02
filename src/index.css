@@ -637,3 +637,153 @@ body {
   border-radius: 12px !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
 }
+
+.admin-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  color: #4b5563; /* gray-600 */
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.admin-sidebar-item:hover {
+  background-color: #f3f4f6; /* gray-100 */
+  color: #111827; /* gray-900 */
+}
+
+.admin-sidebar-item.active {
+  background-color: #e0e7ff; /* indigo-100 */
+  color: #4f46e5; /* indigo-600 */
+  font-weight: 500;
+}
+
+.admin-sidebar-subitem {
+  padding-left: 2rem; /* indentation */
+}
+
+.admin-sidebar-icon {
+  font-size: 1.25rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: #fff;
+  border-bottom: 1px solid #ebedf3;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.menu-toggle {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #5e6278;
+}
+
+.breadcrumb {
+  font-size: 0.9rem;
+  color: #a1a5b7;
+  font-weight: 500;
+}
+
+.breadcrumb-current {
+  color: #181c32;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  color: #a1a5b7;
+  width: 16px;
+  height: 16px;
+}
+
+.search-input {
+  padding: 0.5rem 2rem 0.5rem 2.5rem;
+  border: 1px solid #ebedf3;
+  border-radius: 6px;
+  width: 250px;
+  font-size: 0.9rem;
+}
+
+.search-shortcut {
+  position: absolute;
+  right: 10px;
+  font-size: 0.7rem;
+  color: #a1a5b7;
+  background: #ebedf3;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #5e6278;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem;
+}
+
+.profile-dropdown {
+  position: relative;
+  padding-left: 1rem;
+  border-left: 1px solid #ebedf3;
+}
+
+.profile-avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  background: #fff;
+  border: 1px solid #eef0f5;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  min-width: 150px;
+  z-index: 100;
+}
+
+.dropdown-item {
+  padding: 10px 16px;
+  cursor: pointer;
+  color: #f1416c;
+  font-weight: 500;
+  border-bottom: 1px solid #eef0f5;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
