@@ -752,3 +752,175 @@ body {
   border-radius: 12px !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
 }
+
+/*RFID CSS*/
+/* Toast notifications */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  min-width: 250px;
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  z-index: 1000;
+  animation: slideIn 0.2s ease;
+  border-left: 4px solid;
+}
+.toast-success { border-left-color: #50cd89; }
+.toast-error { border-left-color: #f1416c; }
+.toast-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #94a3b8;
+}
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Pulse animation for skeletons */
+.pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+/* Icon buttons */
+.btn-icon-action {
+  background: transparent;
+  border: none;
+  padding: 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #5e6278;
+  transition: all 0.2s;
+}
+.btn-icon-action:hover {
+  background: #f0f4ff;
+  color: #3e97ff;
+  transform: scale(1.05);
+}
+.btn-icon-action.delete:hover {
+  background: #ffe8ec;
+  color: #f1416c;
+}
+.btn-icon-copy {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: #94a3b8;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+.btn-icon-copy:hover {
+  background: #f1f5f9;
+  color: #3e97ff;
+}
+
+/* Glass modal */
+.modal-glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 24px;
+  width: 90%;
+  max-width: 450px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+  animation: scaleIn 0.2s ease;
+}
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Modal inputs */
+.modal-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+  background: rgba(255,255,255,0.9);
+}
+.modal-input:focus {
+  outline: none;
+  border-color: #3e97ff;
+  box-shadow: 0 0 0 3px rgba(62,151,255,0.1);
+}
+
+/* Pagination footer */
+.pagination-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-top: 1px solid #eff2f5;
+}
+.rows-select {
+  width: 70px;
+  padding: 6px 8px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  margin: 0 12px;
+  background: white;
+}
+.pagination-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.pagination-btn {
+  padding: 8px 16px;
+  border-radius: 30px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.pagination-btn:hover:not(:disabled) {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.pagination-current {
+  padding: 8px 16px;
+  border-radius: 30px;
+  background: #3e97ff;
+  color: white;
+  font-weight: 500;
+}
+
+/* Table row hover animation */
+.table-row-hover {
+  transition: background 0.2s, transform 0.1s;
+}
+.table-row-hover:hover {
+  background: #fafbff;
+  transform: scale(1.001);
+}
+
+/* Status badge clickable */
+.badge.cursor-pointer {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.badge.cursor-pointer:hover {
+  filter: brightness(0.95);
+}
