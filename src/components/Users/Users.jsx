@@ -237,7 +237,7 @@ const Users = () => {
       <div className="admin-card p-3 mb-4">
         <div className="d-flex flex-wrap gap-3 align-center justify-content-between">
           <div className="d-flex flex-wrap gap-3 align-center">
-            <div className="search-input-wrapper" style={{ minWidth: '280px' }}>
+            <div className="search-input-wrapper" style={{ position: 'relative', minWidth: '280px' }}>
               <svg
                 stroke="currentColor"
                 fill="currentColor"
@@ -245,6 +245,14 @@ const Users = () => {
                 className="search-icon"
                 height="1em"
                 width="1em"
+                style={{
+                  position: 'absolute',
+                  left: '14px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: '#a0b3cc',
+                  zIndex: 1,
+                }}
               >
                 <path d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z" />
               </svg>
@@ -254,6 +262,7 @@ const Users = () => {
                 type="text"
                 value={searchTerm}
                 onChange={handleSearch}
+                style={{ paddingLeft: '40px' }} // make room for the icon
               />
             </div>
             <select
