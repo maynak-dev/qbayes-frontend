@@ -7,7 +7,6 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
   const [companies, setCompanies] = useState([]);
   const [locations, setLocations] = useState([]);
   const [shops, setShops] = useState([]);
-
   const [formData, setFormData] = useState({
     username: '',
     name: '',
@@ -20,19 +19,14 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     status: 'Pending',
     steps: 0,
   });
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [loadingLocations, setLoadingLocations] = useState(false);
   const [loadingShops, setLoadingShops] = useState(false);
   const [loadingRoles, setLoadingRoles] = useState(false);
 
-  // Log formData changes for debugging
-  useEffect(() => {
-    console.log('Current formData:', formData);
-  }, [formData]);
+  const statuses = ['Pending', 'Approved', 'Rejected'];
 
-  // Fetch companies when modal opens
   useEffect(() => {
     if (!isOpen) return;
     const fetchOptions = async () => {
@@ -40,14 +34,12 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
         const [companiesRes] = await Promise.all([api.get('/companies/')]);
         setCompanies(companiesRes.data);
       } catch (err) {
-        console.error('Failed to load companies', err);
         setError('Failed to load companies. Please refresh.');
       }
     };
     fetchOptions();
   }, [isOpen]);
 
-  // Reset form when modal closes
   useEffect(() => {
     if (!isOpen) {
       setFormData({
@@ -69,10 +61,8 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     }
   }, [isOpen]);
 
-  // Populate form when user changes (modal opens with a user)
   useEffect(() => {
     if (user) {
-      console.log('User data received:', user);
       setFormData({
         username: user.username || '',
         name: user.name || '',
@@ -88,7 +78,6 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     }
   }, [user]);
 
-  // Fetch locations when company changes – never reset form data
   useEffect(() => {
     if (!formData.company) {
       setLocations([]);
@@ -102,7 +91,6 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
         const res = await api.get(`/locations/?company=${selectedCompany.id}`);
         setLocations(res.data);
       } catch (err) {
-        console.error('Failed to load locations', err);
         setError('Failed to load locations. Please try again.');
       } finally {
         setLoadingLocations(false);
@@ -111,7 +99,6 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     fetchLocations();
   }, [formData.company, companies]);
 
-  // Fetch shops when location changes – never reset form data
   useEffect(() => {
     if (!formData.location) {
       setShops([]);
@@ -125,7 +112,6 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
         const res = await api.get(`/shops/?location=${selectedLocation.id}`);
         setShops(res.data);
       } catch (err) {
-        console.error('Failed to load shops', err);
         setError('Failed to load shops. Please try again.');
       } finally {
         setLoadingShops(false);
@@ -134,7 +120,6 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     fetchShops();
   }, [formData.location, locations]);
 
-  // Fetch roles when shop changes – never reset form data
   useEffect(() => {
     if (!formData.shop) {
       setRoles([]);
@@ -148,7 +133,6 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
         const res = await api.get(`/roles/?shop=${selectedShop.id}`);
         setRoles(res.data);
       } catch (err) {
-        console.error('Failed to load roles', err);
         setError('Failed to load roles. Please try again.');
       } finally {
         setLoadingRoles(false);
@@ -156,8 +140,6 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
     };
     fetchRoles();
   }, [formData.shop, shops]);
-
-  const statuses = ['Pending', 'Approved', 'Rejected'];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -184,15 +166,11 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
       },
     };
 
-    console.log('🔵 Edit payload:', payload);
-
     try {
       const response = await api.put(`/users/${user.id}/`, payload);
-      console.log('🟢 Edit response:', response.data);
-      onUserUpdated();
+      onUserUpdated(response.data);
       onClose();
     } catch (err) {
-      console.error('🔴 Edit error:', err.response?.data);
       const data = err.response?.data;
       let msg = 'Update failed. ';
       if (typeof data === 'object') {
@@ -213,87 +191,72 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-glass" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h3 className="modal-title">Edit User</h3>
-          <button className="modal-close-btn" onClick={onClose}>
-            <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="20" width="20">
-              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
-            </svg>
-          </button>
+          <button className="modal-close-btn" onClick={onClose}>×</button>
         </div>
-
-        <form onSubmit={handleSubmit} className="modal-form">
+        <form onSubmit={handleSubmit}>
           {error && <div className="modal-error">{error}</div>}
 
-          {/* Username */}
           <div className="input-group">
-            <label htmlFor="username">Username *</label>
+            <label>Username *</label>
             <input
               type="text"
-              id="username"
               name="username"
-              className="login-input"
+              className="modal-input"
               value={formData.username}
               onChange={handleChange}
               required
             />
           </div>
 
-          {/* Full Name */}
           <div className="input-group">
-            <label htmlFor="name">Full Name *</label>
+            <label>Full Name *</label>
             <input
               type="text"
-              id="name"
               name="name"
-              className="login-input"
+              className="modal-input"
               value={formData.name}
               onChange={handleChange}
               required
             />
           </div>
 
-          {/* Email */}
           <div className="input-group">
-            <label htmlFor="email">Email *</label>
+            <label>Email *</label>
             <input
               type="email"
-              id="email"
               name="email"
-              className="login-input"
+              className="modal-input"
               value={formData.email}
               onChange={handleChange}
               required
             />
           </div>
 
-          {/* Phone */}
           <div className="input-group">
-            <label htmlFor="phone">Phone Number</label>
+            <label>Phone Number</label>
             <input
               type="tel"
-              id="phone"
               name="phone"
-              className="login-input"
+              className="modal-input"
               value={formData.phone}
               onChange={handleChange}
             />
           </div>
 
-          {/* Company Dropdown */}
           <div className="input-group">
-            <label htmlFor="company">Company *</label>
+            <label>Company *</label>
             <select
-              id="company"
               name="company"
-              className="login-input"
+              className="modal-input"
               value={formData.company}
               onChange={handleChange}
               required
             >
               <option value="">Select company</option>
-              {companies.map((comp) => (
+              {companies.map(comp => (
                 <option key={comp.id} value={comp.name}>{comp.name}</option>
               ))}
               {formData.company && !companies.some(c => c.name === formData.company) && (
@@ -304,13 +267,11 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
             </select>
           </div>
 
-          {/* Location Dropdown */}
           <div className="input-group">
-            <label htmlFor="location">Location *</label>
+            <label>Location *</label>
             <select
-              id="location"
               name="location"
-              className="login-input"
+              className="modal-input"
               value={formData.location}
               onChange={handleChange}
               required
@@ -323,7 +284,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
                   ? 'Loading locations...'
                   : 'Select location'}
               </option>
-              {locations.map((loc) => (
+              {locations.map(loc => (
                 <option key={loc.id} value={loc.name}>{loc.name}</option>
               ))}
               {formData.location && !locations.some(l => l.name === formData.location) && (
@@ -334,13 +295,11 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
             </select>
           </div>
 
-          {/* Shop Dropdown */}
           <div className="input-group">
-            <label htmlFor="shop">Shop *</label>
+            <label>Shop *</label>
             <select
-              id="shop"
               name="shop"
-              className="login-input"
+              className="modal-input"
               value={formData.shop}
               onChange={handleChange}
               required
@@ -353,7 +312,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
                   ? 'Loading shops...'
                   : 'Select shop'}
               </option>
-              {shops.map((shop) => (
+              {shops.map(shop => (
                 <option key={shop.id} value={shop.name}>{shop.name}</option>
               ))}
               {formData.shop && !shops.some(s => s.name === formData.shop) && (
@@ -364,13 +323,11 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
             </select>
           </div>
 
-          {/* Role Dropdown */}
           <div className="input-group">
-            <label htmlFor="role">Role *</label>
+            <label>Role *</label>
             <select
-              id="role"
               name="role"
-              className="login-input"
+              className="modal-input"
               value={formData.role}
               onChange={handleChange}
               required
@@ -383,7 +340,7 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
                   ? 'Loading roles...'
                   : 'Select role'}
               </option>
-              {roles.map((role) => (
+              {roles.map(role => (
                 <option key={role.id} value={role.id}>{role.name}</option>
               ))}
               {formData.role && !roles.some(r => r.id === parseInt(formData.role)) && (
@@ -394,30 +351,26 @@ const EditUserModal = ({ isOpen, onClose, user, onUserUpdated }) => {
             </select>
           </div>
 
-          {/* Status Dropdown */}
           <div className="input-group">
-            <label htmlFor="status">Status</label>
+            <label>Status</label>
             <select
-              id="status"
               name="status"
-              className="login-input"
+              className="modal-input"
               value={formData.status}
               onChange={handleChange}
             >
-              {statuses.map((s) => (
+              {statuses.map(s => (
                 <option key={s} value={s}>{s}</option>
               ))}
             </select>
           </div>
 
-          {/* Steps */}
           <div className="input-group">
-            <label htmlFor="steps">Steps</label>
+            <label>Steps</label>
             <input
               type="number"
-              id="steps"
               name="steps"
-              className="login-input"
+              className="modal-input"
               value={formData.steps}
               onChange={handleChange}
               min="0"

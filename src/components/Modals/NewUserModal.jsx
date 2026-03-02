@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import api from '../../api';
-import './NewUserModal.css';
+import './NewUserModal.css'; // We'll keep this for additional styles, but override with glass
 
 const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
   const [roles, setRoles] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [locations, setLocations] = useState([]);
   const [shops, setShops] = useState([]);
-
   const [formData, setFormData] = useState({
     username: '',
     name: '',
@@ -18,14 +17,12 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
     location: '',
     shop: '',
   });
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [loadingLocations, setLoadingLocations] = useState(false);
   const [loadingShops, setLoadingShops] = useState(false);
   const [loadingRoles, setLoadingRoles] = useState(false);
 
-  // Fetch companies when modal opens
   useEffect(() => {
     if (!isOpen) return;
     const fetchOptions = async () => {
@@ -33,14 +30,12 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
         const [companiesRes] = await Promise.all([api.get('/companies/')]);
         setCompanies(companiesRes.data);
       } catch (err) {
-        console.error('Failed to load companies', err);
         setError('Failed to load companies. Please refresh.');
       }
     };
     fetchOptions();
   }, [isOpen]);
 
-  // Reset form when modal closes
   useEffect(() => {
     if (!isOpen) {
       setFormData({
@@ -80,7 +75,6 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
           setFormData(prev => ({ ...prev, location: '', shop: '', role: '' }));
         }
       } catch (err) {
-        console.error('Failed to load locations', err);
         setError('Failed to load locations. Please try again.');
       } finally {
         setLoadingLocations(false);
@@ -108,7 +102,6 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
           setFormData(prev => ({ ...prev, shop: '', role: '' }));
         }
       } catch (err) {
-        console.error('Failed to load shops', err);
         setError('Failed to load shops. Please try again.');
       } finally {
         setLoadingShops(false);
@@ -135,7 +128,6 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
           setFormData(prev => ({ ...prev, role: '' }));
         }
       } catch (err) {
-        console.error('Failed to load roles', err);
         setError('Failed to load roles. Please try again.');
       } finally {
         setLoadingRoles(false);
@@ -149,154 +141,131 @@ const NewUserModal = ({ isOpen, onClose, onUserCreated }) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError('');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
-  const payload = {
-    username: formData.username,
-    email: formData.email,
-    profile: {
-      first_name: formData.name,  // Note: we need to map name to first_name in the profile? Actually profile doesn't have first_name. We'll discuss.
-      // But the profile model does NOT have name/first_name – that belongs to the user.
-      // So we need to split: user fields go top-level, profile fields go inside profile.
-      phone: formData.phone,
-      role: formData.role ? parseInt(formData.role) : null,
-      company: formData.company,
-      location: formData.location,
-      shop: formData.shop,
-      status: formData.status,     // if you want to set status at creation
-      steps: parseInt(formData.steps),
-    },
-  };
+    const payload = {
+      username: formData.username,
+      email: formData.email,
+      profile: {
+        first_name: formData.name,
+        phone: formData.phone,
+        role: formData.role ? parseInt(formData.role) : null,
+        company: formData.company,
+        location: formData.location,
+        shop: formData.shop,
+        status: 'Pending', // default
+        steps: 0,
+      },
+    };
 
-  console.log('🔵 NewUser payload:', payload);
-
-  try {
-    const response = await api.post('/users/', payload);
-    console.log('🟢 NewUser response:', response.data);
-    onUserCreated(response.data);
-    onClose();
-  } catch (err) {
-    console.error('🔴 NewUser error:', err.response?.data);
-    const data = err.response?.data;
-    let msg = 'Creation failed. ';
-    if (typeof data === 'object') {
-      const errors = Object.entries(data)
-        .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`)
-        .join('; ');
-      msg += errors;
-    } else {
-      msg += 'Please try again.';
+    try {
+      const response = await api.post('/users/', payload);
+      onUserCreated(response.data);
+      onClose();
+    } catch (err) {
+      const data = err.response?.data;
+      let msg = 'Creation failed. ';
+      if (typeof data === 'object') {
+        const errors = Object.entries(data)
+          .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`)
+          .join('; ');
+        msg += errors;
+      } else {
+        msg += 'Please try again.';
+      }
+      setError(msg);
+    } finally {
+      setLoading(false);
     }
-    setError(msg);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   if (!isOpen) return null;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-glass" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h3 className="modal-title">Add New User</h3>
-          <button className="modal-close-btn" onClick={onClose}>
-            <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="20" width="20">
-              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
-            </svg>
-          </button>
+          <button className="modal-close-btn" onClick={onClose}>×</button>
         </div>
-
-        <form onSubmit={handleSubmit} className="modal-form">
+        <form onSubmit={handleSubmit}>
           {error && <div className="modal-error">{error}</div>}
 
-          {/* Username */}
           <div className="input-group">
-            <label htmlFor="username">Username *</label>
+            <label>Username *</label>
             <input
               type="text"
-              id="username"
               name="username"
-              className="login-input"
-              placeholder="Choose a username"
+              className="modal-input"
               value={formData.username}
               onChange={handleChange}
               required
+              placeholder="Choose a username"
             />
           </div>
 
-          {/* Full Name */}
           <div className="input-group">
-            <label htmlFor="name">Full Name *</label>
+            <label>Full Name *</label>
             <input
               type="text"
-              id="name"
               name="name"
-              className="login-input"
-              placeholder="Enter full name"
+              className="modal-input"
               value={formData.name}
               onChange={handleChange}
               required
+              placeholder="Enter full name"
             />
           </div>
 
-          {/* Email */}
           <div className="input-group">
-            <label htmlFor="email">Email *</label>
+            <label>Email *</label>
             <input
               type="email"
-              id="email"
               name="email"
-              className="login-input"
-              placeholder="user@example.com"
+              className="modal-input"
               value={formData.email}
               onChange={handleChange}
               required
+              placeholder="user@example.com"
             />
           </div>
 
-          {/* Phone */}
           <div className="input-group">
-            <label htmlFor="phone">Phone Number</label>
+            <label>Phone Number</label>
             <input
               type="tel"
-              id="phone"
               name="phone"
-              className="login-input"
-              placeholder="+1 234 567 890"
+              className="modal-input"
               value={formData.phone}
               onChange={handleChange}
+              placeholder="+1 234 567 890"
             />
           </div>
 
-          {/* Company Dropdown */}
           <div className="input-group">
-            <label htmlFor="company">Company *</label>
+            <label>Company *</label>
             <select
-              id="company"
               name="company"
-              className="login-input"
+              className="modal-input"
               value={formData.company}
               onChange={handleChange}
               required
             >
               <option value="">Select company</option>
-              {companies.map((comp) => (
+              {companies.map(comp => (
                 <option key={comp.id} value={comp.name}>{comp.name}</option>
               ))}
             </select>
           </div>
 
-          {/* Location Dropdown */}
           <div className="input-group">
-            <label htmlFor="location">Location *</label>
+            <label>Location *</label>
             <select
-              id="location"
               name="location"
-              className="login-input"
+              className="modal-input"
               value={formData.location}
               onChange={handleChange}
               required
@@ -309,19 +278,17 @@ const handleSubmit = async (e) => {
                   ? 'Loading locations...'
                   : 'Select location'}
               </option>
-              {locations.map((loc) => (
+              {locations.map(loc => (
                 <option key={loc.id} value={loc.name}>{loc.name}</option>
               ))}
             </select>
           </div>
 
-          {/* Shop Dropdown */}
           <div className="input-group">
-            <label htmlFor="shop">Shop *</label>
+            <label>Shop *</label>
             <select
-              id="shop"
               name="shop"
-              className="login-input"
+              className="modal-input"
               value={formData.shop}
               onChange={handleChange}
               required
@@ -334,19 +301,17 @@ const handleSubmit = async (e) => {
                   ? 'Loading shops...'
                   : 'Select shop'}
               </option>
-              {shops.map((shop) => (
+              {shops.map(shop => (
                 <option key={shop.id} value={shop.name}>{shop.name}</option>
               ))}
             </select>
           </div>
 
-          {/* Role Dropdown */}
           <div className="input-group">
-            <label htmlFor="role">Role *</label>
+            <label>Role *</label>
             <select
-              id="role"
               name="role"
-              className="login-input"
+              className="modal-input"
               value={formData.role}
               onChange={handleChange}
               required
@@ -359,7 +324,7 @@ const handleSubmit = async (e) => {
                   ? 'Loading roles...'
                   : 'Select role'}
               </option>
-              {roles.map((role) => (
+              {roles.map(role => (
                 <option key={role.id} value={role.id}>{role.name}</option>
               ))}
             </select>
