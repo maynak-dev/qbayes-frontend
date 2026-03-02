@@ -20,9 +20,10 @@ body {
 .admin-wrapper {
   display: flex;
   min-height: 100vh;
+  position: relative;
 }
 
-/* Sidebar – always visible on desktop, hidden on mobile by default */
+/* Sidebar – hidden by default, slides in when open */
 .admin-sidebar {
   width: 260px;
   background-color: #fff;
@@ -35,31 +36,44 @@ body {
   bottom: 0;
   z-index: 100;
   transition: transform 0.3s ease;
+  transform: translateX(-100%); /* hidden */
 }
 
-/* Main content – offset for sidebar on desktop */
+.admin-sidebar.open {
+  transform: translateX(0); /* visible */
+}
+
+/* Main content – full width by default, shifts when sidebar open */
 .admin-main {
   flex: 1;
-  margin-left: 260px;
+  margin-left: 0;
   transition: margin 0.3s ease;
 }
 
-/* Mobile styles */
-@media (max-width: 992px) {
-  .admin-sidebar {
-    transform: translateX(-100%); /* hidden by default */
-  }
-  .admin-main {
-    margin-left: 0; /* full width */
-  }
-  .sidebar-close-btn {
-    display: block; /* show close button on mobile */
-  }
+.admin-wrapper.sidebar-open .admin-main {
+  margin-left: 260px;
 }
 
-/* When sidebar is open (on mobile) */
-.admin-sidebar.open {
-  transform: translateX(0);
+/* Overlay – only visible on mobile when sidebar is open */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99;
+  display: none;
+}
+
+.admin-wrapper.sidebar-open .sidebar-overlay {
+  display: block;
+}
+
+@media (min-width: 993px) {
+  .sidebar-overlay {
+    display: none !important; /* always hidden on desktop */
+  }
 }
 
 /* ========== SIDEBAR HEADER ========== */
@@ -83,7 +97,7 @@ body {
   font-size: 1.2rem;
   cursor: pointer;
   color: #7e8299;
-  display: none; /* hidden on desktop */
+  display: block; /* always visible on mobile, but we show it on desktop too if desired */
 }
 
 /* ========== SIDEBAR MENU ========== */
@@ -100,25 +114,25 @@ body {
   padding: 0.75rem 1rem;
   margin: 4px 8px;
   border-radius: 0.5rem;
-  color: #4b5563; /* gray-600 */
+  color: #4b5563;
   text-decoration: none;
   transition: background-color 0.2s, color 0.2s;
 }
 
 .admin-sidebar-item:hover,
 .admin-sidebar-item.active {
-  background-color: #f3f4f6; /* gray-100 */
-  color: #111827; /* gray-900 */
+  background-color: #f3f4f6;
+  color: #111827;
 }
 
 .admin-sidebar-item.active {
-  background-color: #e0e7ff; /* indigo-100 */
-  color: #4f46e5; /* indigo-600 */
+  background-color: #e0e7ff;
+  color: #4f46e5;
   font-weight: 500;
 }
 
 .admin-sidebar-subitem {
-  padding-left: 2rem; /* indentation for nested items */
+  padding-left: 2rem;
 }
 
 .admin-sidebar-icon {
@@ -146,6 +160,7 @@ body {
   gap: 1rem;
 }
 
+/* Menu toggle (hamburger) – always visible */
 .menu-toggle {
   background: none;
   border: none;
@@ -153,12 +168,6 @@ body {
   cursor: pointer;
   color: #5e6278;
   display: block;
-}
-
-@media (max-width: 992px) {
-  .menu-toggle {
-    display: block;
-  }
 }
 
 .breadcrumb {
@@ -267,7 +276,7 @@ body {
   padding: 24px;
 }
 
-/* ========== UTILITY CLASSES (keep as needed) ========== */
+/* ========== UTILITY CLASSES ========== */
 .d-flex {
   display: flex;
 }
