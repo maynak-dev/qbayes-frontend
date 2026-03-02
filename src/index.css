@@ -152,7 +152,7 @@ body {
   font-size: 1.5rem;
   cursor: pointer;
   color: #5e6278;
-  display: none; /* hidden on desktop, shown on mobile */
+  display: block;
 }
 
 @media (max-width: 992px) {
