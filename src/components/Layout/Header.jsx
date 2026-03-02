@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Header = ({ onMenuClick }) => {
+const Header = ({ onMenuClick, sidebarOpen }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
@@ -20,50 +20,39 @@ const Header = ({ onMenuClick }) => {
   const handleLogout = () => {
     localStorage.removeItem('access');
     localStorage.removeItem('refresh');
-    setShowDropdown(false); // Close dropdown before navigating
     navigate('/login');
   };
 
   return (
     <header className="admin-header">
       <div className="header-left">
-        {/* Mobile menu toggle – visible only on small screens */}
-        {/* <button
-          className="menu-toggle d-lg-none"
-          onClick={onMenuClick}
-          aria-label="Toggle sidebar"
-        >
-          <svg stroke="currentColor" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z" />
-          </svg>
-        </button> */}
-
+        {/* Toggle button – icon changes based on sidebar state */}
         <button
           className="menu-toggle"
           onClick={onMenuClick}
-          aria-label="Toggle sidebar"
-          style={{
-            background: 'transparent',
-            border: 'none',
-            fontSize: '1.5rem',
-            marginRight: '10px',
-            cursor: 'pointer',
-            color: '#333',
-          }}
+          aria-label={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
         >
-          ☰
+          {sidebarOpen ? (
+            // X icon (close)
+            <svg stroke="currentColor" fill="currentColor" viewBox="0 0 24 24" height="1.5rem" width="1.5rem">
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+            </svg>
+          ) : (
+            // Hamburger icon
+            <svg stroke="currentColor" fill="currentColor" viewBox="0 0 24 24" height="1.5rem" width="1.5rem">
+              <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z" />
+            </svg>
+          )}
         </button>
-
-        {/* Breadcrumb */}
         <span className="breadcrumb">
           Dashboards &gt; <span className="breadcrumb-current">Default</span>
         </span>
       </div>
 
       <div className="header-right">
-        {/* Search with keyboard shortcut hint */}
+        {/* Search */}
         <div className="search-wrapper">
-          <svg className="search-icon" stroke="currentColor" fill="currentColor" viewBox="0 0 24 24">
+          <svg className="search-icon" stroke="currentColor" fill="currentColor" viewBox="0 0 24 24" width="16" height="16">
             <path d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z" />
           </svg>
           <input
@@ -90,7 +79,7 @@ const Header = ({ onMenuClick }) => {
           </svg>
         </button>
 
-        {/* App icon (or other) */}
+        {/* App icon */}
         <button className="icon-btn" aria-label="Apps">
           <svg stroke="currentColor" fill="currentColor" viewBox="0 0 24 24" width="20" height="20">
             <path d="M15 3H4.984c-1.103 0-2 .897-2 2v14.016c0 1.103.897 2 2 2H19c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2h-4zm4 5h-3V5h3v3zM4.984 10h3v4.016h-3V10zm5 0H14v4.016H9.984V10zM16 10h3v4.016h-3V10zm-2-5v3H9.984V5H14zM7.984 5v3h-3V5h3zm-3 11.016h3v3h-3v-3zm5 3v-3H14v3H9.984zm6.016 0v-3h3.001v3H16z" />
@@ -100,7 +89,7 @@ const Header = ({ onMenuClick }) => {
         {/* Profile dropdown */}
         <div className="profile-dropdown" ref={dropdownRef}>
           <img
-            alt="Admin profile"
+            alt="Profile"
             src="https://ui-avatars.com/api/?name=Admin&background=random"
             className="profile-avatar"
             onClick={() => setShowDropdown(!showDropdown)}

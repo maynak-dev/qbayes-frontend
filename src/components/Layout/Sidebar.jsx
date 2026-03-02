@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 
-// Icons
+// Icons (unchanged)
 const DashboardIcon = () => (
   <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em">
     <path d="M10 3H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zM9 9H5V5h4v4zm5 2h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1zm1-6h4v4h-4V5zM3 20a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v6zm2-5h4v4H5v-4zm8 5a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6zm2-5h4v4h-4v-4z"></path>
@@ -45,10 +45,10 @@ const MapIcon = () => (
 );
 
 const Sidebar = ({ open, onClose }) => {
-  // All secondary items (to be nested under Dashboard)
-  const subMenuItems = [
-    { name: 'Users', icon: UsersIcon, path: '/admin/users' },
+  const menuItems = [
+    { name: 'Dashboard', icon: DashboardIcon, path: '/admin' },
     { name: 'Designation', icon: RoleIcon, path: '/admin/roles' },
+    { name: 'Users', icon: UsersIcon, path: '/admin/users' },
     { name: 'Company Creation', icon: CompanyIcon, path: '/admin/company-creation' },
     { name: 'Jewellery', icon: JewelleryIcon, path: '/admin/jewellery' },
     { name: 'RFID', icon: RFIDIcon, path: '/admin/rfid' },
@@ -61,42 +61,22 @@ const Sidebar = ({ open, onClose }) => {
         <div className="brand-logo">
           <span>QBayes</span>
         </div>
-        <button className="sidebar-close-btn" onClick={onClose}>
-          <svg stroke="currentColor" fill="currentColor" viewBox="0 0 24 24" height="24" width="24">
-            <path d="m16.192 6.344-4.243 4.242-4.242-4.242-1.414 1.414L10.535 12l-4.242 4.242 1.414 1.414 4.242-4.242 4.243 4.242 1.414-1.414L13.364 12l4.242-4.242z" />
-          </svg>
-        </button>
+        {/* Close button removed – now handled by header toggle */}
       </div>
-
       <div className="admin-sidebar-menu">
-        {/* Dashboard – main item */}
-        <NavLink
-          to="/admin"
-          className={({ isActive }) => `admin-sidebar-item ${isActive ? 'active' : ''}`}
-          onClick={onClose}
-        >
-          <span className="admin-sidebar-icon">
-            <DashboardIcon />
-          </span>
-          <span>Dashboard</span>
-        </NavLink>
-
-        {/* Nested items under Dashboard (with indentation) */}
-        <div className="admin-sidebar-submenu">
-          {subMenuItems.map((item) => (
-            <NavLink
-              key={item.name}
-              to={item.path}
-              className={({ isActive }) => `admin-sidebar-item admin-sidebar-subitem ${isActive ? 'active' : ''}`}
-              onClick={onClose}
-            >
-              <span className="admin-sidebar-icon">
-                <item.icon />
-              </span>
-              <span>{item.name}</span>
-            </NavLink>
-          ))}
-        </div>
+        {menuItems.map((item) => (
+          <NavLink
+            key={item.name}
+            to={item.path}
+            className={({ isActive }) => `admin-sidebar-item ${isActive ? 'active' : ''}`}
+            onClick={onClose}
+          >
+            <span className="admin-sidebar-icon">
+              <item.icon />
+            </span>
+            <span>{item.name}</span>
+          </NavLink>
+        ))}
       </div>
     </div>
   );
