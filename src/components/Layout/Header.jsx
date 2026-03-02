@@ -28,7 +28,7 @@ const Header = ({ onMenuClick }) => {
     <header className="admin-header">
       <div className="header-left">
         {/* Mobile menu toggle – visible only on small screens */}
-        <button
+        {/* <button
           className="menu-toggle d-lg-none"
           onClick={onMenuClick}
           aria-label="Toggle sidebar"
@@ -36,6 +36,22 @@ const Header = ({ onMenuClick }) => {
           <svg stroke="currentColor" fill="currentColor" viewBox="0 0 24 24">
             <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z" />
           </svg>
+        </button> */}
+
+        <button
+          className="menu-toggle"
+          onClick={onMenuClick}
+          aria-label="Toggle sidebar"
+          style={{
+            background: 'transparent',
+            border: 'none',
+            fontSize: '1.5rem',
+            marginRight: '10px',
+            cursor: 'pointer',
+            color: '#333',
+          }}
+        >
+          ☰
         </button>
 
         {/* Breadcrumb */}
