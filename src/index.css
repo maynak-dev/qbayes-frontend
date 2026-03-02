@@ -991,3 +991,40 @@ body {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(62, 151, 255, 0.3);
 }
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-icon-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #5e6278;
+  transition: all 0.2s;
+  width: 36px;
+  height: 36px;
+}
+
+.btn-icon-action:hover {
+  background: #f0f4ff;
+  color: #3e97ff;
+}
+
+.btn-icon-action.delete:hover {
+  background: #ffe8ec;
+  color: #f1416c;
+}
+
+.btn-icon-action svg {
+  width: 18px;
+  height: 18px;
+}

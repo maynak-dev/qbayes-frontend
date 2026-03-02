@@ -243,7 +243,7 @@ const RFID = () => {
             </button>
           </div>
         </div>
-        
+
       {/* Search */}
       <div className="admin-card p-3 mb-4">
         <div className="search-input-wrapper" style={{ maxWidth: '300px' }}>
