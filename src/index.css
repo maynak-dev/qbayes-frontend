@@ -924,3 +924,70 @@ body {
 .badge.cursor-pointer:hover {
   filter: brightness(0.95);
 }
+
+/* Admin header section */
+.admin-header-section {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.header-info {
+  flex: 1 1 auto;
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+}
+
+.page-description {
+  font-size: 0.95rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Ensure icon buttons are consistent */
+.btn-light.icon-btn {
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  color: #5e6278;
+  transition: all 0.2s;
+}
+
+.btn-light.icon-btn:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+/* Primary button refinements */
+.btn-primary {
+  padding: 10px 20px;
+  border-radius: 14px;
+  font-weight: 500;
+  background: #3e97ff;
+  border: none;
+  color: white;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background: #2b7fd9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(62, 151, 255, 0.3);
+}
