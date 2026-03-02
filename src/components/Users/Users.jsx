@@ -345,10 +345,12 @@ const Users = () => {
                             <option value="Approved">Approved</option>
                             <option value="Rejected">Rejected</option>
                           </select>
-                          {updatingStatus === user.id && (
-                            <span className="small text-muted" style={{ position: 'absolute', right: '-60px', top: '50%', transform: 'translateY(-50%)', whiteSpace: 'nowrap' }}>Updating...</span>
-                          )}
                         </div>
+                        {updatingStatus === user.id && (
+                          <div className="small text-muted" style={{ marginTop: '4px', fontSize: '0.75rem', textAlign: 'center' }}>
+                            Updating...
+                          </div>
+                        )}
                       </td>
                       <td style={{ padding: '16px 12px' }}>
                         {user.role_details?.name || 'Not assigned'}
