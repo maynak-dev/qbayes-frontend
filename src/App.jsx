@@ -73,8 +73,8 @@ function App() {
 
         {/* Redirect root to dashboard */}
         <Route path="/" element={<Navigate to="/admin" />} />
-        
-        <Route path="/rfid-scans" element={<RFIDScans />} />
+
+        <Route path="/admin/rfid-scans" element={<RFIDScans />} />
       </Routes>
     </BrowserRouter>
   );
