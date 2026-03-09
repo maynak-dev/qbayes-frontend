@@ -8,6 +8,8 @@ import Roles from './components/Roles/Roles';
 import Jewellery from './components/Jewellery/Jewellery';
 import RFID from './components/RFID/RFID';
 import RFIDJewelleryMap from './components/RFIDJewelleryMap/RFIDJewelleryMap';
+import RFIDScans from './components/RFIDScans/RFIDScans';
+
 // Simple auth check – replace with real token validation if needed
 const isAuthenticated = () => {
   return localStorage.getItem('access') !== null;
@@ -71,6 +73,8 @@ function App() {
 
         {/* Redirect root to dashboard */}
         <Route path="/" element={<Navigate to="/admin" />} />
+        
+        <Route path="/rfid-scans" element={<RFIDScans />} />
       </Routes>
     </BrowserRouter>
   );

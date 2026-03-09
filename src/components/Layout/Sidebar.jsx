@@ -44,6 +44,12 @@ const MapIcon = () => (
   </svg>
 );
 
+const ScanIcon = () => (
+  <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em">
+    <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4zM3 4h18v2H3zm0 12h18v2H3z"></path>
+  </svg>
+);
+
 const Sidebar = ({ open, onClose }) => {
   // All secondary items (to be nested under Dashboard)
   const subMenuItems = [
@@ -53,6 +59,7 @@ const Sidebar = ({ open, onClose }) => {
     { name: 'Jewellery', icon: JewelleryIcon, path: '/admin/jewellery' },
     { name: 'RFID', icon: RFIDIcon, path: '/admin/rfid' },
     { name: 'Jewellery-RFID Map', icon: MapIcon, path: '/admin/rfid-jewellery-map' },
+    { name: 'RFID Scans', icon: ScanIcon, path: '/admin/rfid-scans' },
   ];
 
   return (
